@@ -52,7 +52,7 @@ const Mark = () => (
 );
 
 const MapPage = ({ schedule }) => {
-  const [map, setMap] = React.useState<MapboxGl.Map | undefined>(null);
+  const [map, setMap] = React.useState<MapboxGl.Map | null>(null);
   const [activeLoc, setActiveLoc] = React.useState<any>(null);
   const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
@@ -109,6 +109,7 @@ const MapPage = ({ schedule }) => {
                       lat: coordinate.lokasi.lat,
                       lng: coordinate.lokasi.lon,
                     },
+                    //@ts-ignore
                     padding: { bottom: 340 },
                   });
                 }
@@ -179,6 +180,7 @@ const MapPage = ({ schedule }) => {
                         lat: parseFloat(lokasiMap[0].lat),
                         lng: parseFloat(lokasiMap[0].lon),
                       },
+                      //@ts-ignore
                       padding: { bottom: 340 },
                     });
                     setActiveLoc(lokasiMap[0]);
