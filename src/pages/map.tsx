@@ -1,5 +1,6 @@
 import {
   Link as ChakraLink,
+  Flex,
   Badge,
   Text,
   Heading,
@@ -17,14 +18,32 @@ import {
   IconButton,
   Box,
   HStack,
+  useColorMode,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import React, { Fragment } from "react";
 import ReactMapboxGl, { Marker } from "react-mapbox-gl";
 import Link from 'next/link';
-import { Container } from "../components/Container";
 import { getSchedule } from "../data/getSchedule";
 import "mapbox-gl/dist/mapbox-gl.css";
+
+function Container(props) {
+  const { colorMode } = useColorMode();
+
+  const bgColor = { light: "gray.50", dark: "gray.900" };
+
+  const color = { light: "black", dark: "white" };
+  return (
+    <Flex
+      direction="column"
+      alignItems="center"
+      justifyContent="flex-start"
+      bg={bgColor[colorMode]}
+      color={color[colorMode]}
+      {...props}
+    />
+  );
+}
 
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
