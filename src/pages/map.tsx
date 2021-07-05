@@ -140,7 +140,7 @@ const MapPage = ({ schedule }) => {
 
   const setInitialMapBound = (mapBox: MapboxGl.Map) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    if (window && window.navigator && window.navigator.permissions) {
+    if ('permissions' in navigator) {
       window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
         const permission = data.state === 'granted';
         setGetGeoPermission(permission);
