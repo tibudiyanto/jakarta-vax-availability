@@ -20,6 +20,7 @@ import {
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
+import { hasQuota } from '../helpers/QuotaHelpers';
 
 export default function VaxLocation({ loading, location, isUserLocationExist }) {
   const {
@@ -34,8 +35,16 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
     detail_lokasi
   } = location;
 
+  const isCurrentLocationHasQuota = hasQuota(jadwal);
+
   return (
-    <Stack borderColor={mode('blackAlpha.200', 'whiteAlpha.200')} borderRadius="md" borderWidth={1} h="full" w="full">
+    <Stack
+      borderColor={isCurrentLocationHasQuota ? mode('blackAlpha.200', 'whiteAlpha.200') : 'red'}
+      borderRadius="md"
+      borderWidth={1}
+      h="full"
+      w="full"
+    >
       {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
         <Box
           bg={mode('gray.100', 'gray.600')}
@@ -59,6 +68,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
         <Text>{wilayah}</Text>
+        {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
         <Spacer />
         <Wrap>
           {jadwal.map(({ id: jadwalId, waktu }) => (
