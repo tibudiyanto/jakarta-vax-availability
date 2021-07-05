@@ -5,7 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next",
-    "lint": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
     "start": "next start",
     "type-check": "tsc --noEmit",
     "validate": "yarn lint && yarn type-check"
