@@ -1,30 +1,16 @@
 /* eslint-disable react/style-prop-object */
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { getSchedule } from '../data/getSchedule';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Flex,
-  HStack,
-  IconButton,
-  Input,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  Select,
-  Text,
-  useColorMode
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, IconButton, Input, Select, useColorMode } from '@chakra-ui/react';
 import MapboxGl from 'mapbox-gl';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
+import VaxLocation from 'components/VaxLocation';
 
 function Container(props) {
   const { colorMode } = useColorMode();
@@ -91,7 +77,7 @@ const MapPage = ({ schedule }) => {
 
   scheduleToRender({ schedule, searchBy, searchKeyword }).forEach(l => {
     l.detail_lokasi.forEach(lokasi => {
-      lokasiMap.push({ ...lokasi, jadwal: l.jadwal });
+      lokasiMap.push({ ...lokasi, jadwal: l.jadwal, parent: l });
     });
   });
 
@@ -108,65 +94,50 @@ const MapPage = ({ schedule }) => {
           height: '100vh',
           width: '100%'
         }}
-        onDrag={(e) => setActiveLoc(null)}
+        onDrag={e => setActiveLoc(null)}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
           loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
-        {coordinates.map((coordinate, i) => {
-          return (
-            //@ts-ignore
-            <Marker key={i} coordinates={coordinate}>
-            <Box
-              onClick={() => {
-                setActiveLoc(coordinate.lokasi);
-                if (map) {
-                  map.easeTo({
-                    center: {
-                      lat: coordinate.lokasi.lat,
-                      lng: coordinate.lokasi.lon,
-                    },
-                    //@ts-ignore
-                    padding: { bottom: 340 },
-                  });
-                }
-              }}
-            >
-              <Mark key={i} />
-            </Box>
-          </Marker>
-          );
-        })}
-        {activeLoc && (
+        <>
+          {coordinates.map((coordinate, i) => {
+            return (
+              //@ts-ignore
+              <Marker key={i} coordinates={coordinate}>
+                <Box
+                  onClick={() => {
+                    setActiveLoc(coordinate.lokasi);
+                    if (map) {
+                      map.easeTo({
+                        center: {
+                          lat: coordinate.lokasi.lat,
+                          lng: coordinate.lokasi.lon
+                        }
+                      });
+                    }
+                  }}
+                >
+                  <Mark key={i} />
+                </Box>
+              </Marker>
+            );
+          })}
+          {activeLoc && (
             <Popup
+              anchor="bottom"
               key={activeLoc.osm_id}
               //@ts-ignore
               coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
-              style={{ marginLeft: -150, marginTop: 40 }}
+              style={{ marginTop: -20, padding: 0 }}
             >
-              <Popover isOpen={true} autoFocus={false}>
-                <PopoverContent>
-                  <PopoverArrow />
-                  <PopoverCloseButton onClick={() => setActiveLoc(null)} />
-                  <PopoverHeader>{activeLoc?.display_name}</PopoverHeader>
-                  <PopoverBody maxHeight="300px" overflowY="auto">
-                    {activeLoc?.jadwal.map(({ id, waktu }) => {
-                      return (
-                        <Fragment key={id}>
-                          <Text fontWeight="extrabold">{id}</Text>
-                          {waktu.map(({ label, id }) => {
-                            return <Text key={id}>{label}</Text>;
-                          })}
-                        </Fragment>
-                      );
-                    })}
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
+              <Box bg="black">
+                <VaxLocation location={activeLoc.parent} />
+              </Box>
             </Popup>
           )}
+        </>
       </Map>
       <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex={999999}>
         <Box bg="black" borderRadius={10} margin={2} padding={2}>
@@ -189,19 +160,18 @@ const MapPage = ({ schedule }) => {
             </Select>
             <Input
               fontSize={[14, 16]}
-              onChange={(e) => {
+              onChange={e => {
                 setSearchKeyword(e.target.value);
 
                 setTimeout(() => {
                   if (lokasiMap.length && lokasiMap[0]) {
-                    map && map.easeTo({
-                      center: {
-                        lat: parseFloat(lokasiMap[0].lat),
-                        lng: parseFloat(lokasiMap[0].lon),
-                      },
-                      //@ts-ignore
-                      padding: { bottom: 340 },
-                    });
+                    map &&
+                      map.easeTo({
+                        center: {
+                          lat: parseFloat(lokasiMap[0].lat),
+                          lng: parseFloat(lokasiMap[0].lon)
+                        }
+                      });
                     setActiveLoc(lokasiMap[0]);
                   } else {
                     setActiveLoc(null);
