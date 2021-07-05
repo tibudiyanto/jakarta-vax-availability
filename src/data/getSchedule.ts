@@ -1,11 +1,8 @@
-import fetch from "isomorphic-unfetch";
+import fetch from 'isomorphic-unfetch';
 
-const scheduleEndpoint = "https://vaksin-jakarta.yggdrasil.id/";
+const SCHEDULE_ENDPOINT = `https://vaksin-jakarta.yggdrasil.id/`;
 
-const getSchedule = async () => {
-  const payload = await fetch(scheduleEndpoint);
-  const json = await payload.json();
-  return json;
-};
-
-export { getSchedule };
+export async function getSchedule() {
+  const payload = await fetch(SCHEDULE_ENDPOINT);
+  return payload.json();
+}
