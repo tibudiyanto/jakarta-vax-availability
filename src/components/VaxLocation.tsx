@@ -63,7 +63,7 @@ export default function VaxLocation({ location }) {
               </PopoverTrigger>
               <PopoverContent w={['95vw', '30vw']}>
                 <PopoverArrow />
-                <PopoverBody opacity={1}>
+                <PopoverBody>
                   <Table>
                     <Thead>
                       <Tr>
