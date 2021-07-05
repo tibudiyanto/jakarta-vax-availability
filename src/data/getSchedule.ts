@@ -1,8 +1,10 @@
+import { IApiResp, ISchedule } from 'interface';
 import fetch from 'isomorphic-unfetch';
 
-const SCHEDULE_ENDPOINT = `https://vaksin-jakarta.yggdrasil.id/`;
+export const SCHEDULE_ENDPOINT = `https://vaksin-jakarta.yggdrasil.id/`;
 
-export async function getSchedule() {
-  const payload = await fetch(SCHEDULE_ENDPOINT);
-  return payload.json();
+export async function getSchedule(): Promise<IApiResp<ISchedule>> {
+  const res = await fetch(SCHEDULE_ENDPOINT);
+  const payload: IApiResp<ISchedule> = await res.json();
+  return payload;
 }

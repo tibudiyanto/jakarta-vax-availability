@@ -1,5 +1,3 @@
-import { hasQuota } from '../helpers/QuotaHelpers';
-
 import {
   Box,
   Button,
@@ -17,17 +15,24 @@ import {
   Text,
   Th,
   Thead,
-  Tooltip,
   Tr,
-  useColorMode,
   useColorModeValue as mode,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
-import { formatDistanceToNow } from 'date-fns';
-import idLocale from 'date-fns/locale/id';
+import { ISchedule } from 'interface';
+import { hasQuota } from '../helpers/QuotaHelpers';
 
-export default function VaxLocation({ loading, location, isUserLocationExist }) {
+interface IVaxLocation {
+  loading: boolean;
+  location: ISchedule;
+  isUserLocationExist: {
+    lat?: number;
+    lon?: number;
+  };
+};
+
+export default function VaxLocation({ loading, location, isUserLocationExist }: IVaxLocation) {
   const {
     nama_lokasi_vaksinasi: namaLokasi,
     // alamat_lokasi_vaksinasi: alamatLokasi,
@@ -37,11 +42,9 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
     // rt,
     // rw,
     jadwal,
-    detail_lokasi,
-    last_updated_at: lastUpdated
+    detail_lokasi
   } = location;
 
-  const { colorMode } = useColorMode();
   const isCurrentLocationHasQuota = hasQuota(jadwal);
 
   return (
@@ -52,14 +55,14 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
       h="full"
       w="full"
     >
-      {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
+      {!loading && isUserLocationExist.lat && isUserLocationExist.lon && detail_lokasi.length > 0 ? (
         <Box
           bg={mode('gray.100', 'gray.600')}
+          w="100%"
+          p={2}
+          borderTopRadius="md"
           borderBottomWidth={1}
           borderColor={mode('blackAlpha.200', 'whiteAlpha.200')}
-          borderTopRadius="md"
-          p={2}
-          w="100%"
         >
           <Text align="center">
             JARAK DARI LOKASI ANDA: <b>{detail_lokasi[0].distance}</b> KM
@@ -69,7 +72,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
         ''
       )}
 
-      <Stack h="full" p={4} w="full">
+      <Stack h="full" w="full" p={4}>
         <Heading size="sm">{namaLokasi}</Heading>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
@@ -118,11 +121,6 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
-        <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
-          <Text align="right" as="i" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
-            Diperbarui {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
-          </Text>
-        </Tooltip>
       </Stack>
     </Stack>
   );

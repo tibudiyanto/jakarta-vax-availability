@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import VaxLocation from '../components/VaxLocation';
 import { getSchedule } from '../data/getSchedule';
+import { ISchedule, IUserLocation, TSearchBy } from '../interface';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Button, Heading, Input, Select, Stack, Wrap, WrapItem } from '@chakra-ui/react';
@@ -9,9 +10,12 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
+interface IHomePage {
+  schedule: ISchedule[] | null;
+}
+
 export async function getStaticProps() {
   const schedule = await getSchedule();
-  console.log(schedule);
   return {
     props: {
       schedule
@@ -20,10 +24,10 @@ export async function getStaticProps() {
   };
 }
 
-export default function HomePage({ schedule }) {
-  const [searchBy, setSearchBy] = React.useState('kecamatan');
-  const [searchKeyword, setSearchKeyword] = React.useState('');
-  const [userLocation, setUserLocation] = React.useState({
+export default function HomePage({ schedule }: IHomePage) {
+  const [searchBy, setSearchBy] = React.useState<TSearchBy>('kecamatan');
+  const [searchKeyword, setSearchKeyword] = React.useState<string>('');
+  const [userLocation, setUserLocation] = React.useState<IUserLocation>({
     loading: false,
     lat: 0,
     lon: 0,
@@ -62,16 +66,16 @@ export default function HomePage({ schedule }) {
           detail_lokasi:
             item.detail_lokasi.length > 0
               ? item.detail_lokasi
-                  .map(loc => ({
-                    ...loc,
-                    distance: getDistanceFromLatLonInKm(
-                      userLocation.lat,
-                      userLocation.lon,
-                      Number(loc.lat),
-                      Number(loc.lon)
-                    )
-                  }))
-                  .sort((a, b) => a.distance - b.distance)
+                .map(loc => ({
+                  ...loc,
+                  distance: getDistanceFromLatLonInKm(
+                    userLocation.lat,
+                    userLocation.lon,
+                    Number(loc.lat),
+                    Number(loc.lon)
+                  )
+                }))
+                .sort((a, b) => a.distance - b.distance)
               : item.detail_lokasi
         }))
         .sort((a, b) => {
