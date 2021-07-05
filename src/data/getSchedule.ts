@@ -1,8 +1,14 @@
+import { VaccinationData } from './types';
+
 import fetch from 'isomorphic-unfetch';
 
 const SCHEDULE_ENDPOINT = `https://vaksin-jakarta.yggdrasil.id/`;
 
-export async function getSchedule() {
+const getSchedule = async () => {
   const payload = await fetch(SCHEDULE_ENDPOINT);
-  return payload.json();
-}
+  const json = (await payload.json()) as VaccinationData[];
+
+  return json;
+};
+
+export { getSchedule };
