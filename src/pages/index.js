@@ -32,7 +32,7 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const VaxLocationDetail = (location) => { };
+const VaxLocationDetail = (location) => {};
 
 const VaxLocation = (location) => {
   const {
@@ -88,11 +88,19 @@ const VaxLocation = (location) => {
 const Index = ({ schedule }) => {
   const [searchBy, setSearchBy] = React.useState("kecamatan");
   const [searchKeyword, setSearchKeyword] = React.useState("");
+  const [userLocation, setUserLocation] = React.useState({
+    loading: false,
+    lat: 0,
+    lon: 0,
+    error: "",
+  });
 
   const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
+    console.log(userLocation);
     if (!searchKeyword.length) {
       return schedule;
     }
+
     return schedule.filter((props) => {
       return props[searchBy]
         .toLowerCase()
@@ -100,17 +108,65 @@ const Index = ({ schedule }) => {
     });
   };
 
+  const getUserLocation = () => {
+    if (!navigator || !navigator.geolocation) {
+      console.error("Geolocation is not supported");
+      setUserLocation((prev) => ({
+        ...prev,
+        error: "Geolocation is not supported",
+      }));
+      return;
+    }
+
+    setUserLocation((prev) => ({ ...prev, loading: true }));
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setUserLocation({
+          loading: false,
+          lat: coords.latitude,
+          lon: coords.longitude,
+          error: "",
+        });
+      },
+      (error) => {
+        console.error(`Get geolocation error: ${error.message}`);
+        setUserLocation({
+          loading: false,
+          lat: 0,
+          lon: 0,
+          error: "Get geolocation error",
+        });
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: Infinity,
+        maximumAge: 0,
+      }
+    );
+  };
+
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
       <Stack paddingInline={[4, 6]} width="100%">
-        <Heading paddingBlockStart="8">Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
+        <Heading paddingBlockStart="8">
+          Lokasi dan Jadwal Vaksinasi DKI Jakarta
+        </Heading>
 
         <Flex direction="row">
+          <Button
+            flexShrink={0}
+            mr={2}
+            onClick={() => getUserLocation()}
+            isLoading={userLocation.loading}
+          >
+            Dapatkan Lokasi Anda
+          </Button>
           <Select
+            mr={2}
             flexShrink={0}
             value={searchBy}
-            marginRight={1}
             width="auto"
             onChange={(e) => {
               setSearchBy(e.target.value);
