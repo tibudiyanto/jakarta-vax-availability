@@ -14,13 +14,16 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
+  IconButton,
   Box,
-  Flex,
+  HStack,
 } from "@chakra-ui/react";
-import { Container } from "../components/Container";
-import { getSchedule } from "../data/getSchedule";
+import { ArrowBackIcon } from '@chakra-ui/icons';
 import React, { Fragment } from "react";
 import ReactMapboxGl, { Marker } from "react-mapbox-gl";
+import Link from 'next/link';
+import { Container } from "../components/Container";
+import { getSchedule } from "../data/getSchedule";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const Map = ReactMapboxGl({
@@ -143,7 +146,10 @@ const Index = ({ schedule }) => {
         zIndex={999999999999}
       >
         <Box margin={2} bg="black" borderRadius={10} padding={2}>
-          <Flex direction="row">
+          <HStack spacing="8px">]
+            <Link href="/" passHref>
+              <IconButton as="a" aria-label="Back to Home" icon={<ArrowBackIcon />} borderRadius={4} />
+            </Link>
             <Select
               flexShrink={0}
               value={searchBy}
@@ -162,8 +168,8 @@ const Index = ({ schedule }) => {
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
               fontSize={[14, 16]}
-            ></Input>
-          </Flex>
+            />
+          </HStack>
         </Box>
       </Box>
     </Container>
