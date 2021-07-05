@@ -27,6 +27,7 @@ import { getSchedule } from "../data/getSchedule";
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { formatDistanceToNow } from 'date-fns'
+import idLocale from "date-fns/locale/id"
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -93,7 +94,7 @@ const VaxLocation = (location) => {
             color={colorMode === "dark" ? "gray.300" : "gray.600"}
             align="right"
           >
-            Last updated {formatDistanceToNow(Date.parse(lastUpdated))} ago
+            Informasi terakhir diperbarui {formatDistanceToNow(Date.parse(lastUpdated), {locale: idLocale, addSuffix: true})}
           </Text>
         </Tooltip>
       </Stack>
