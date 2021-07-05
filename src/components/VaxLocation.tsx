@@ -8,7 +8,13 @@ import {
   PopoverTrigger,
   Spacer,
   Stack,
+  Table,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
   useColorModeValue as mode,
   Wrap,
   WrapItem
@@ -50,14 +56,32 @@ export default function VaxLocation({ location }) {
                   {jadwalId}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent w={['95vw', '30vw']}>
                 <PopoverArrow />
                 <PopoverBody>
-                  <Stack>
-                    {waktu.map(({ label, id: waktuId }) => (
-                      <Text key={waktuId}>{label}</Text>
-                    ))}
-                  </Stack>
+                  <Table>
+                    <Thead>
+                      <Tr>
+                        <Th>Waktu</Th>
+                        <Th>Sisa Kuota</Th>
+                        <Th>Jaki Kuota</Th>
+                        <Th>Total Kuota</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {waktu.map(({ label, id, kuota }) => {
+                        const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
+                        return (
+                          <Tr key={id}>
+                            <Td>{label}</Td>
+                            <Td>{sisaKuota}</Td>
+                            <Td>{jakiKuota}</Td>
+                            <Td>{totalKuota}</Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
                 </PopoverBody>
               </PopoverContent>
             </Popover>

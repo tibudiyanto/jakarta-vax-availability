@@ -24,6 +24,7 @@ export default function HomePage({ schedule }) {
   const [searchKeyword, setSearchKeyword] = React.useState('');
 
   React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     document.querySelector('input')?.focus();
   }, []);
 
