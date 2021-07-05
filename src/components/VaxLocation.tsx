@@ -11,8 +11,8 @@ import {
   Text,
   useColorModeValue as mode,
   Wrap,
-  WrapItem,
-} from '@chakra-ui/react'
+  WrapItem
+} from '@chakra-ui/react';
 
 export default function VaxLocation({ location }) {
   const {
@@ -23,8 +23,8 @@ export default function VaxLocation({ location }) {
     kelurahan,
     // rt,
     // rw,
-    jadwal,
-  } = location
+    jadwal
+  } = location;
 
   return (
     <Stack
@@ -65,5 +65,5 @@ export default function VaxLocation({ location }) {
         ))}
       </Wrap>
     </Stack>
-  )
+  );
 }

@@ -16,8 +16,8 @@
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": false,
-    "strictNullChecks": false,
+    "strict": true,
+    "noImplicitAny": false,
     "target": "es5"
   },
   "exclude": ["node_modules"],
