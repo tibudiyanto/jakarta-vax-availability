@@ -110,7 +110,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
-        <Grid templateColumns="1fr 2fr" gridTemplateAreas={`"distance timestamp"`} gap={2}>
+        <Grid templateColumns="1fr 3fr" gridTemplateAreas={`"distance timestamp"`} gap={2}>
           {hasDistanceFromLocation ? (
             <HStack spacing={2} gridArea="distance">
               <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
