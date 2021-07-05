@@ -97,7 +97,7 @@ const Index = ({ schedule }) => {
     return result;
   };
 
-  const lokasiMap = [];
+  const lokasiMap: any[] = [];
 
   scheduleToRender({ schedule, searchBy, searchKeyword }).forEach(l => {
     l.detail_lokasi.forEach(lokasi => {
