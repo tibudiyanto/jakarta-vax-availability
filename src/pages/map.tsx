@@ -1,30 +1,29 @@
-import {
-  Link as ChakraLink,
-  Badge,
-  Text,
-  Heading,
-  Wrap,
-  Stack,
-  Select,
-  Input,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  IconButton,
-  Box,
-  HStack
-} from '@chakra-ui/react';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+/* eslint-disable react/style-prop-object */
+import 'mapbox-gl/dist/mapbox-gl.css';
+
 import React, { Fragment } from 'react';
-import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
-import Link from 'next/link';
+
 import { Container } from '../components/Container';
 import { getSchedule } from '../data/getSchedule';
-import 'mapbox-gl/dist/mapbox-gl.css';
+
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import {
+  Box,
+  HStack,
+  IconButton,
+  Input,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Select,
+  Text,
+} from '@chakra-ui/react';
+import Link from 'next/link';
+import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY
@@ -52,8 +51,8 @@ const Mark = ({ lokasi }) => (
           return (
             <Fragment key={id}>
               <Text fontWeight="extrabold">{id}</Text>
-              {waktu.map(({ label, id }) => {
-                return <Text key={id}>{label}</Text>;
+              {waktu.map(({ label, id: _id }) => {
+                return <Text key={_id}>{label}</Text>;
               })}
             </Fragment>
           );
@@ -63,7 +62,7 @@ const Mark = ({ lokasi }) => (
   </Popover>
 );
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params: _ }) {
   const schedule = await getSchedule();
   return {
     props: {
@@ -83,7 +82,7 @@ const Index = ({ schedule }) => {
       return schedule;
     }
     const result = schedule.filter(props => {
-      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase()) && props['detail_lokasi'].length;
+      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase()) && props.detail_lokasi.length;
     });
 
     const detail = result[0] && result[0].detail_lokasi;
@@ -97,7 +96,7 @@ const Index = ({ schedule }) => {
     return result;
   };
 
-  let lokasiMap = [];
+  const lokasiMap = [];
 
   scheduleToRender({ schedule, searchBy, searchKeyword }).forEach(l => {
     l.detail_lokasi.forEach(lokasi => {
@@ -114,7 +113,6 @@ const Index = ({ schedule }) => {
   return (
     <Container minHeight="100vh">
       <Map
-        style="mapbox://styles/mapbox/streets-v8"
         containerStyle={{
           height: '100vh',
           width: '100%'
@@ -123,41 +121,42 @@ const Index = ({ schedule }) => {
           setMap(map);
           map.setCenter({ lat: -6.163088, lng: 106.836715 });
         }}
+        style="mapbox://styles/mapbox/streets-v8"
       >
         {coordinates.map((coordinate, i) => {
           return (
-            //@ts-ignore
+            // @ts-expect-error - `coordinate` is still untyped
             <Marker key={i} coordinates={coordinate}>
               <Mark key={i} lokasi={coordinate.lokasi} />
             </Marker>
           );
         })}
       </Map>
-      <Box position="fixed" top={0} left={0} width="100%" maxWidth={450} height={80} zIndex={999999999999}>
-        <Box margin={2} bg="black" borderRadius={10} padding={2}>
+      <Box height={80} left={0} maxWidth={450} position="fixed" top={0} width="100%" zIndex={999999999999}>
+        <Box bg="black" borderRadius={10} margin={2} padding={2}>
           <HStack spacing="8px">
             ]
             <Link href="/" passHref>
-              <IconButton as="a" aria-label="Back to Home" icon={<ArrowBackIcon />} borderRadius={4} />
+              <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
             </Link>
             <Select
               flexShrink={0}
-              value={searchBy}
+              fontSize={[14, 16]}
               marginRight={1}
-              width="auto"
               onChange={e => {
                 setSearchBy(e.target.value);
               }}
-              fontSize={[14, 16]}
+              value={searchBy}
+              width="auto"
             >
               <option value="kecamatan">Kecamatan</option>
               <option value="kelurahan">Kelurahan</option>
             </Select>
             <Input
+              fontSize={[14, 16]}
+              onChange={e => setSearchKeyword(e.target.value)}
               placeholder="cari kecamatan / kelurahan"
               value={searchKeyword}
-              onChange={e => setSearchKeyword(e.target.value)}
-              fontSize={[14, 16]}
             />
           </HStack>
         </Box>

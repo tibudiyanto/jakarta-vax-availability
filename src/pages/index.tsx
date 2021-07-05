@@ -1,29 +1,26 @@
-import {
-  Link as ChakraLink,
-  Badge,
-  Text,
-  Heading,
-  Wrap,
-  Stack,
-  Select,
-  Input,
-  useDisclosure,
-  Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
-  Flex,
-  Link,
-  SimpleGrid
-} from '@chakra-ui/react';
+import React from 'react';
+
 import { Container } from '../components/Container';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import { getSchedule } from '../data/getSchedule';
-import React from 'react';
+
 import { ExternalLinkIcon } from '@chakra-ui/icons';
+import {
+  Button,
+  Flex,
+  Heading,
+  Input,
+  Link,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -35,7 +32,7 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const VaxLocationDetail = location => {};
+const ignoredVaxLocationDetail = _location => {};
 
 const VaxLocation = location => {
   const {
@@ -50,14 +47,14 @@ const VaxLocation = location => {
   } = location;
 
   return (
-    <Container border={'1px solid black'} alignItems="start" minHeight={['10em']}>
+    <Container alignItems="start" border="1px solid black" minHeight={['10em']}>
       <Stack padding={1} w="100%">
         <Text>{namaLokasi}</Text>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
         <Text>{wilayah}</Text>
-        <Stack direction="row" wrap="wrap" gridRowGap={2} paddingBlockEnd={2}>
+        <Stack direction="row" gridRowGap={2} paddingBlockEnd={2} wrap="wrap">
           {jadwal.map(({ id, waktu }) => {
             return (
               <Popover key={id}>
@@ -100,7 +97,7 @@ const Index = ({ schedule }) => {
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
       <Link href="/map">
-        <Button position="absolute" right={20} top={2} leftIcon={<ExternalLinkIcon />} variant="solid">
+        <Button leftIcon={<ExternalLinkIcon />} position="absolute" right={20} top={2} variant="solid">
           Peta
         </Button>
       </Link>
@@ -110,21 +107,21 @@ const Index = ({ schedule }) => {
         <Flex direction="row">
           <Select
             flexShrink={0}
-            value={searchBy}
             marginRight={1}
-            width="auto"
             onChange={e => {
               setSearchBy(e.target.value);
             }}
+            value={searchBy}
+            width="auto"
           >
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
           </Select>
           <Input
+            onChange={e => setSearchKeyword(e.target.value)}
             placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
-            onChange={e => setSearchKeyword(e.target.value)}
-          ></Input>
+          />
         </Flex>
 
         <SimpleGrid columns={[1, 2, 3]} spacing={2}>

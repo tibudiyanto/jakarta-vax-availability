@@ -2,6 +2,7 @@
   "extends": ["plugin:prettier/recommended", "prettier", "kentcdodds", "kentcdodds/react", "kentcdodds/jsx-a11y", "plugin:@next/next/recommended"],
   "plugins": ["prettier", "simple-import-sort"],
   "rules": {
+    "@babel/new-cap": "off",
     "import/extensions": ["warn", "never", { "css": "ignorePackages" }],
     "import/newline-after-import": "warn",
     "import/no-extraneous-dependencies": "warn",
