@@ -16,11 +16,13 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   Flex,
+  Link,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
 import React from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -32,7 +34,7 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const VaxLocationDetail = (location) => { };
+const VaxLocationDetail = (location) => {};
 
 const VaxLocation = (location) => {
   const {
@@ -103,8 +105,22 @@ const Index = ({ schedule }) => {
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
+      <Link href="/map">
+        <Button
+          href
+          position="absolute"
+          right={20}
+          top={2}
+          leftIcon={<ExternalLinkIcon />}
+          variant="solid"
+        >
+          Peta
+        </Button>
+      </Link>
       <Stack paddingInline={[4, 6]} width="100%">
-        <Heading paddingBlockStart="8">Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
+        <Heading paddingBlockStart="8">
+          Lokasi dan Jadwal Vaksinasi DKI Jakarta
+        </Heading>
 
         <Flex direction="row">
           <Select
