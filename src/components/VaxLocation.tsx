@@ -21,14 +21,6 @@ import {
   WrapItem
 } from '@chakra-ui/react';
 
-// {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
-//   <Box bg={distanceBg[colorMode]} w="100%" p={2}>
-//     <Text align="center">JARAK DARI LOKASI ANDA : {detail_lokasi[0].distance} KM</Text>
-//   </Box>
-// ) : (
-//   ''
-// )}
-
 export default function VaxLocation({ loading, location, isUserLocationExist }) {
   const {
     nama_lokasi_vaksinasi: namaLokasi,
