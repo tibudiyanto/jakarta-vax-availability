@@ -5,7 +5,7 @@ import { hasQuota } from '../helpers/QuotaHelpers';
 import { InfoOutlineIcon } from '@chakra-ui/icons';
 import {
   Button,
-  Flex,
+  Grid,
   Heading,
   HStack,
   Popover,
@@ -110,9 +110,9 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
-        <Flex flexDirection="row" justifyContent="space-between">
+        <Grid templateColumns="1fr 2fr" gridTemplateAreas={`"distance timestamp"`} gap={2}>
           {hasDistanceFromLocation ? (
-            <HStack spacing={2}>
+            <HStack spacing={2} gridArea="distance">
               <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
               <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
                 <InfoOutlineIcon />
@@ -120,14 +120,14 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </HStack>
           ) : null}
           <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
-            <Text align="right" as="span" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
+            <Text align="right" as="span" gridArea="timestamp" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
               Diperbarui{' '}
               <Text as="time" dateTime={new Date(lastUpdated).toISOString()}>
                 {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
               </Text>
             </Text>
           </Tooltip>
-        </Flex>
+        </Grid>
       </Stack>
     </Stack>
   );
