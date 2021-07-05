@@ -18,11 +18,16 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
+  useColorMode,
   useColorModeValue as mode,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
+import { formatDistanceToNow } from 'date-fns';
+import idLocale from 'date-fns/locale/id';
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export default function VaxLocation({ loading, location, isUserLocationExist }) {
   const {
@@ -34,9 +39,12 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
     // rt,
     // rw,
     jadwal,
-    detail_lokasi
+    detail_lokasi,
+    last_updated_at: lastUpdated
   } = location;
 
+  const { colorMode } = useColorMode();
+  
   const mapsUrl =
     detail_lokasi[0] == null
       ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
@@ -70,7 +78,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
 
       <Stack h="full" p={4} w="full">
         <Link href={mapsUrl} isExternal>
-          <Heading size="sm">{namaLokasi}</Heading>
+          <Heading size="sm">{namaLokasi} <ExternalLinkIcon mx="2px"/></Heading>
         </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
@@ -119,6 +127,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
+        <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
+          <Text align="right" as="i" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
+            Diperbarui {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
+          </Text>
+        </Tooltip>
       </Stack>
     </Stack>
   );
