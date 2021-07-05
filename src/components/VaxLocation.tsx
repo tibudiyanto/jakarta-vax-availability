@@ -1,9 +1,13 @@
+import * as React from 'react';
+
 import { hasQuota } from '../helpers/QuotaHelpers';
 
+import { InfoOutlineIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
+  Flex,
   Heading,
+  HStack,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -44,6 +48,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
   const { colorMode } = useColorMode();
   const isCurrentLocationHasQuota = hasQuota(jadwal);
 
+  const hasDistanceFromLocation = React.useMemo(
+    () => !loading && isUserLocationExist && detail_lokasi.length > 0,
+    [loading, isUserLocationExist, detail_lokasi]
+  );
+
   return (
     <Stack
       borderColor={isCurrentLocationHasQuota ? mode('blackAlpha.200', 'whiteAlpha.200') : 'red'}
@@ -52,23 +61,6 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
       h="full"
       w="full"
     >
-      {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
-        <Box
-          bg={mode('gray.100', 'gray.600')}
-          borderBottomWidth={1}
-          borderColor={mode('blackAlpha.200', 'whiteAlpha.200')}
-          borderTopRadius="md"
-          p={2}
-          w="100%"
-        >
-          <Text align="center">
-            JARAK DARI LOKASI ANDA: <b>{detail_lokasi[0].distance}</b> KM
-          </Text>
-        </Box>
-      ) : (
-        ''
-      )}
-
       <Stack h="full" p={4} w="full">
         <Heading size="sm">{namaLokasi}</Heading>
         <Text>
@@ -118,11 +110,24 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
-        <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
-          <Text align="right" as="i" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
-            Diperbarui {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
-          </Text>
-        </Tooltip>
+        <Flex flexDirection="row" justifyContent="space-between">
+          {hasDistanceFromLocation && (
+            <HStack spacing={2}>
+              <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
+              <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
+                <InfoOutlineIcon />
+              </Tooltip>
+            </HStack>
+          )}
+          <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
+            <Text align="right" as="span" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
+              Diperbarui{' '}
+              <Text as="time" dateTime={new Date(lastUpdated).toISOString()}>
+                {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
+              </Text>
+            </Text>
+          </Tooltip>
+        </Flex>
       </Stack>
     </Stack>
   );
