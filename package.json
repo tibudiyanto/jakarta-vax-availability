@@ -21,7 +21,7 @@
     "framer-motion": "^4.0.3",
     "isomorphic-unfetch": "^3.1.0",
     "mapbox-gl": "^2.3.1",
-    "next": "latest",
+    "next": "^11.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-mapbox-gl": "^5.1.1"
