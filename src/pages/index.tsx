@@ -9,6 +9,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
+import Fuse from 'fuse.js';
+
 export async function getStaticProps() {
   const schedule = await getSchedule();
   console.log(schedule);
@@ -21,7 +23,6 @@ export async function getStaticProps() {
 }
 
 export default function HomePage({ schedule }) {
-  const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const [userLocation, setUserLocation] = React.useState({
     loading: false,
@@ -48,15 +49,20 @@ export default function HomePage({ schedule }) {
       return schedule;
     }
 
+    const fuse = new Fuse(schedule, {
+      keys: ['nama_lokasi_vaksinasi', 'wilayah', 'kecamatan', 'kelurahan'],
+      threshold: 0.4
+    });
+
+    const results = fuse.search(searchKeyword);
+    const scheduleSearchResult = searchKeyword ? results.map(schedule => schedule.item) : schedule;
+
     if (userLocation.lat && userLocation.lon) {
       /**
        * Add distance from current location to the vax location
        * for each item in `detail_lokasi` and sort it by the nearest.
        */
-      return schedule
-        .filter(props => {
-          return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
-        })
+      return scheduleSearchResult
         .map(item => ({
           ...item,
           detail_lokasi:
@@ -85,10 +91,8 @@ export default function HomePage({ schedule }) {
         });
     }
 
-    return schedule.filter(s => {
-      return s[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
-    });
-  }, [schedule, searchBy, searchKeyword, userLocation]);
+    return scheduleSearchResult;
+  }, [schedule, searchKeyword, userLocation]);
 
   const getUserLocation = () => {
     setUserLocation(prev => ({ ...prev, loading: true }));
@@ -156,15 +160,11 @@ export default function HomePage({ schedule }) {
           >
             {userLocation.lat && userLocation.lon ? 'Lokasi Ditemukan' : 'Dapatkan Lokasi Anda'}
           </Button>
-          <Select maxW={['auto', '2xs']} onChange={e => setSearchBy(e.target.value)} value={searchBy}>
-            <option value="kecamatan">Kecamatan</option>
-            <option value="kelurahan">Kelurahan</option>
-          </Select>
           <Input
             flexGrow={1}
             fontSize={[14, 16]}
             onChange={e => setSearchKeyword(e.target.value)}
-            placeholder="cari kecamatan/kelurahan"
+            placeholder="cari nama lokasi vaksinasi/wilayah/kecamatan/kelurahan"
           />
         </Stack>
 

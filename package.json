@@ -19,6 +19,7 @@
     "@emotion/styled": "^11.0.0",
     "date-fns": "^2.22.1",
     "framer-motion": "^4.0.3",
+    "fuse.js": "^6.4.6",
     "isomorphic-unfetch": "^3.1.0",
     "mapbox-gl": "^2.3.1",
     "next": "latest",
