@@ -1,5 +1,6 @@
 import { hasQuota } from '../helpers/QuotaHelpers';
 
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -25,11 +26,25 @@ import {
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
+import { DetailLokasi, VaccinationData } from 'data/types';
 import { formatDistanceToNow } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-export default function VaxLocation({ loading, location, isUserLocationExist }) {
+type DetailLokasiWithDistance = DetailLokasi & {
+  distance?: string | null;
+};
+
+export type VaccinationDataWithDistance = Omit<VaccinationData, 'detail_lokasi'> & {
+  detail_lokasi?: (DetailLokasiWithDistance | null)[] | null;
+};
+
+interface Props {
+  loading: boolean;
+  isUserLocationExist: boolean;
+  location: VaccinationDataWithDistance;
+}
+
+export default function VaxLocation({ loading, location, isUserLocationExist }: Props) {
   const {
     nama_lokasi_vaksinasi: namaLokasi,
     // alamat_lokasi_vaksinasi: alamatLokasi,
@@ -44,11 +59,13 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
   } = location;
 
   const { colorMode } = useColorMode();
-  
+
   const mapsUrl =
-    detail_lokasi[0] == null
+    detail_lokasi?.[0] == null
       ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
-      : `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`;
+      : `https://www.google.com/maps/search/${encodeURIComponent(
+          `${detail_lokasi[0]?.lat}, ${detail_lokasi[0]?.lon}`
+        )}`;
   const isCurrentLocationHasQuota = hasQuota(jadwal);
 
   return (
@@ -59,7 +76,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
       h="full"
       w="full"
     >
-      {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
+      {!loading && isUserLocationExist && (detail_lokasi?.length ?? 0) > 0 ? (
         <Box
           bg={mode('gray.100', 'gray.600')}
           borderBottomWidth={1}
@@ -69,7 +86,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
           w="100%"
         >
           <Text align="center">
-            JARAK DARI LOKASI ANDA: <b>{detail_lokasi[0].distance}</b> KM
+            JARAK DARI LOKASI ANDA: <b>{detail_lokasi?.[0]?.distance}</b> KM
           </Text>
         </Box>
       ) : (
@@ -78,7 +95,9 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
 
       <Stack h="full" p={4} w="full">
         <Link href={mapsUrl} isExternal>
-          <Heading size="sm">{namaLokasi} <ExternalLinkIcon mx="2px"/></Heading>
+          <Heading size="sm">
+            {namaLokasi} <ExternalLinkIcon mx="2px" />
+          </Heading>
         </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
@@ -87,7 +106,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
         {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
         <Spacer />
         <Wrap>
-          {jadwal.map(({ id: jadwalId, waktu }) => (
+          {jadwal?.map(({ id: jadwalId, waktu }) => (
             <WrapItem key={jadwalId}>
               <Popover isLazy>
                 <PopoverTrigger>
@@ -108,7 +127,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {waktu.map(({ label, id, kuota }) => {
+                        {waktu?.map(({ label, id, kuota }) => {
                           const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
                           return (
                             <Tr key={id}>
