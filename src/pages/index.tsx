@@ -19,8 +19,10 @@ import {
   Select,
   SimpleGrid,
   Stack,
-  Text,
+  Text
 } from '@chakra-ui/react';
+import { useGeolocation } from 'rooks';
+import { sortByDistance, Location } from 'utils/sortByDistance';
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -43,8 +45,9 @@ const VaxLocation = location => {
     kelurahan,
     rt,
     rw,
-    jadwal
-  } = location;
+    jadwal,
+    distanceFromCurrentLocation
+  } = location as Location;
 
   return (
     <Container alignItems="start" border="1px solid black" minHeight={['10em']}>
@@ -53,7 +56,11 @@ const VaxLocation = location => {
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
-        <Text>{wilayah}</Text>
+
+        {distanceFromCurrentLocation && (
+          <Text>{`Estimasi jarak dari lokasi anda: ${distanceFromCurrentLocation.toFixed(1)} KM`}</Text>
+        )}
+
         <Stack direction="row" gridRowGap={2} paddingBlockEnd={2} wrap="wrap">
           {jadwal.map(({ id, waktu }) => {
             return (
@@ -83,12 +90,19 @@ const VaxLocation = location => {
 const Index = ({ schedule }) => {
   const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
+  const [listOfLocation, setlistOfLocation] = React.useState<Location[]>([]);
+  const userGeoData = useGeolocation();
 
-  const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
+  React.useEffect(() => {
+    setlistOfLocation(scheduleToRender({ schedule, searchBy, searchKeyword, userGeoData }));
+  }, [schedule, searchBy, searchKeyword, userGeoData, userGeoData]);
+
+  const scheduleToRender = ({ schedule, searchBy, searchKeyword, userGeoData }): Location[] => {
+    const sortedSchadule = sortByDistance({ lat: userGeoData?.lat, lon: userGeoData?.lng }, schedule);
     if (!searchKeyword.length) {
-      return schedule;
+      return sortedSchadule;
     }
-    return schedule.filter(props => {
+    return sortedSchadule.filter(props => {
       return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
     });
   };
@@ -125,8 +139,8 @@ const Index = ({ schedule }) => {
         </Flex>
 
         <SimpleGrid columns={[1, 2, 3]} spacing={2}>
-          {scheduleToRender({ schedule, searchBy, searchKeyword }).map((l, index) => {
-            return <VaxLocation key={index} {...l} />;
+          {listOfLocation.map((l, index) => {
+            return <VaxLocation key={`${index}+ ${l.distanceFromCurrentLocation}`} {...l} />;
           })}
         </SimpleGrid>
       </Stack>
