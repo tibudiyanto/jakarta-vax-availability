@@ -1,32 +1,24 @@
-import {
-  Link as ChakraLink,
-  Badge,
-  Text,
-  Heading,
-  Wrap,
-  Stack,
-  Select,
-  Input,
-  useDisclosure,
-  Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
-  Flex,
-  Link,
-  SimpleGrid,
-} from "@chakra-ui/react";
-import { Container } from "../components/Container";
-import { DarkModeSwitch } from "../components/DarkModeSwitch";
+import * as React from "react";
+
+import VaxLocation from "../components/VaxLocation";
 import { getSchedule } from "../data/getSchedule";
-import React from "react";
+
+import {
+  Button,
+  Heading,
+  Input,
+  Select,
+  Stack,
+  Wrap,
+  WrapItem,
+} from "@chakra-ui/react";
+import Head from "next/head";
+import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps() {
   const schedule = await getSchedule();
+  console.log(schedule);
   return {
     props: {
       schedule,
@@ -35,122 +27,65 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const VaxLocationDetail = (location) => {};
-
-const VaxLocation = (location) => {
-  const {
-    nama_lokasi_vaksinasi: namaLokasi,
-    alamat_lokasi_vaksinasi: alamatLokasi,
-    wilayah,
-    kecamatan,
-    kelurahan,
-    rt,
-    rw,
-    jadwal,
-  } = location;
-
-  return (
-    <Container
-      border={"1px solid black"}
-      alignItems="start"
-      minHeight={["10em"]}
-    >
-      <Stack padding={1} w="100%">
-        <Text>{namaLokasi}</Text>
-        <Text>
-          KEC/KEL: {kecamatan} / {kelurahan}
-        </Text>
-        <Text>{wilayah}</Text>
-        <Stack direction="row" wrap="wrap" gridRowGap={2} paddingBlockEnd={2}>
-          {jadwal.map(({ id, waktu }) => {
-            return (
-              <Popover key={id}>
-                <PopoverTrigger>
-                  <Button>{id}</Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverCloseButton />
-                  <PopoverBody>
-                    <Stack>
-                      {waktu.map(({ label, id }) => {
-                        return <Text key={id}>{label}</Text>;
-                      })}
-                    </Stack>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            );
-          })}
-        </Stack>
-      </Stack>
-    </Container>
-  );
-};
-
-const Index = ({ schedule }) => {
+export default function HomePage({ schedule }) {
   const [searchBy, setSearchBy] = React.useState("kecamatan");
   const [searchKeyword, setSearchKeyword] = React.useState("");
 
-  const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
+  React.useEffect(() => {
+    document.querySelector("input").focus();
+  }, []);
+
+  const filteredSchedule = React.useMemo(() => {
     if (!searchKeyword.length) {
       return schedule;
     }
-    return schedule.filter((props) => {
-      return props[searchBy]
-        .toLowerCase()
-        .includes(searchKeyword.toLowerCase());
+    return schedule.filter((s) => {
+      return s[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
     });
-  };
+  }, [schedule, searchBy, searchKeyword]);
 
   return (
-    <Container minHeight="100vh" overflowX="hidden">
-      <DarkModeSwitch />
-      <Link href="/map">
-        <Button
-          position="absolute"
-          right={20}
-          top={2}
-          leftIcon={<ExternalLinkIcon />}
-          variant="solid"
-        >
-          Peta
-        </Button>
-      </Link>
-      <Stack paddingInline={[4, 6]} width="100%">
-        <Heading paddingBlockStart="8">
-          Lokasi dan Jadwal Vaksinasi DKI Jakarta
+    <>
+      <Head>
+        <title>Lokasi dan Jadwal Vaksinasi DKI Jakarta</title>
+      </Head>
+
+      <Stack align="center" p={[2, 4]} spacing={[2, 4]}>
+        <Heading textAlign="center">
+          😷 Lokasi dan Jadwal Vaksinasi DKI Jakarta
         </Heading>
 
-        <Flex direction="row">
+        <Link href="/map" passHref>
+          <Button as="a" leftIcon={<ExternalLinkIcon />} variant="solid">
+            Peta
+          </Button>
+        </Link>
+
+        <Stack direction={["column", "row"]} maxW="4xl" pb={4} w="full">
           <Select
-            flexShrink={0}
+            maxW={["auto", "2xs"]}
+            onChange={(e) => setSearchBy(e.target.value)}
             value={searchBy}
-            marginRight={1}
-            width="auto"
-            onChange={(e) => {
-              setSearchBy(e.target.value);
-            }}
           >
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
           </Select>
           <Input
-            placeholder="cari kecamatan / kelurahan"
-            value={searchKeyword}
+            flexGrow={1}
+            fontSize={[14, 16]}
             onChange={(e) => setSearchKeyword(e.target.value)}
-          ></Input>
-        </Flex>
+            placeholder="cari kecamatan/kelurahan"
+          />
+        </Stack>
 
-        <SimpleGrid columns={[1,2,3]} spacing={2}>
-          {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
-            (l, index) => {
-              return <VaxLocation key={index} {...l} />;
-            }
-          )}
-        </SimpleGrid>
+        <Wrap justify="center" spacing={4}>
+          {filteredSchedule.map((location, i) => (
+            <WrapItem key={i} maxW={["full", "md"]} w="full">
+              <VaxLocation location={location} />
+            </WrapItem>
+          ))}
+        </Wrap>
       </Stack>
-    </Container>
+    </>
   );
-};
-
-export default Index;
+}
