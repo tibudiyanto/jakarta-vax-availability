@@ -18,10 +18,10 @@ import {
   PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverTrigger,
   Select,
-  Text,
+  Text
 } from '@chakra-ui/react';
+import MapboxGl from 'mapbox-gl';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
@@ -52,7 +52,7 @@ const Mark = () => (
 );
 
 const MapPage = ({ schedule }) => {
-  const [map, setMap] = React.useState<any>(null);
+  const [map, setMap] = React.useState<MapboxGl.Map | undefined>(null);
   const [activeLoc, setActiveLoc] = React.useState<any>(null);
   const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
@@ -68,7 +68,7 @@ const MapPage = ({ schedule }) => {
     return result;
   };
 
-  const lokasiMap: any = [];
+  const lokasiMap: any[] = [];
 
   scheduleToRender({ schedule, searchBy, searchKeyword }).forEach(l => {
     l.detail_lokasi.forEach(lokasi => {
@@ -90,14 +90,15 @@ const MapPage = ({ schedule }) => {
           width: '100%'
         }}
         onDrag={(e) => setActiveLoc(null)}
-        onStyleLoad={(map) => {
-          setMap(map);
-          map.setCenter({ lat: -6.163088, lng: 106.836715 });
+        onStyleLoad={loadedMap => {
+          setMap(loadedMap);
+          loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
         {coordinates.map((coordinate, i) => {
           return (
+            //@ts-ignore
             <Marker key={i} coordinates={coordinate}>
             <Box
               onClick={() => {

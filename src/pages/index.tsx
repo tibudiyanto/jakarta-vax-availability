@@ -19,7 +19,7 @@ import {
   Select,
   SimpleGrid,
   Stack,
-  Text,
+  Text
 } from '@chakra-ui/react';
 
 export async function getStaticProps({ params }) {
