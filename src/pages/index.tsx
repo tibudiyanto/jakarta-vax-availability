@@ -107,7 +107,6 @@ const Index = ({ schedule }) => {
       <DarkModeSwitch />
       <Link href="/map">
         <Button
-          href
           position="absolute"
           right={20}
           top={2}
