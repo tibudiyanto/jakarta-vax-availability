@@ -15,10 +15,12 @@ import {
   Th,
   Thead,
   Tr,
+  Box,
   useColorModeValue as mode,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
+import { hasQuota } from '../helpers/QuotaHelpers';
 
 export default function VaxLocation({ location }) {
   const {
@@ -32,9 +34,11 @@ export default function VaxLocation({ location }) {
     jadwal
   } = location;
 
+  const isCurrentLocationHasQuota = hasQuota(jadwal);
+
   return (
     <Stack
-      borderColor={mode('blackAlpha.200', 'whiteAlpha.200')}
+      borderColor={isCurrentLocationHasQuota ? mode('blackAlpha.200', 'whiteAlpha.200') : 'red'}
       borderRadius="md"
       borderWidth={1}
       h="full"
@@ -47,6 +51,7 @@ export default function VaxLocation({ location }) {
       </Text>
       <Text>{wilayah}</Text>
       <Spacer />
+      {!isCurrentLocationHasQuota && <Box color="red">Kuota Habis</Box>}
       <Wrap>
         {jadwal.map(({ id: jadwalId, waktu }) => (
           <WrapItem key={jadwalId}>
@@ -58,7 +63,7 @@ export default function VaxLocation({ location }) {
               </PopoverTrigger>
               <PopoverContent w={['95vw', '30vw']}>
                 <PopoverArrow />
-                <PopoverBody>
+                <PopoverBody opacity={1}>
                   <Table>
                     <Thead>
                       <Tr>
