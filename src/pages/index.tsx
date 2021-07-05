@@ -19,7 +19,13 @@ import {
   Select,
   SimpleGrid,
   Stack,
-  Text
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr
 } from '@chakra-ui/react';
 
 export async function getStaticProps({ params }) {
@@ -61,14 +67,32 @@ const VaxLocation = location => {
                 <PopoverTrigger>
                   <Button>{id}</Button>
                 </PopoverTrigger>
-                <PopoverContent>
+                <PopoverContent w={['95vw', '30vw']}>
                   <PopoverCloseButton />
                   <PopoverBody>
-                    <Stack>
-                      {waktu.map(({ label, id }) => {
-                        return <Text key={id}>{label}</Text>;
-                      })}
-                    </Stack>
+                    <Table>
+                      <Thead>
+                        <Tr>
+                          <Th>Waktu</Th>
+                          <Th>Sisa Kuota</Th>
+                          <Th>Jaki Kuota</Th>
+                          <Th>Total Kuota</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {waktu.map(({ label, id, kuota }) => {
+                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
+                          return (
+                            <Tr key={id}>
+                              <Td>{label}</Td>
+                              <Td>{sisaKuota}</Td>
+                              <Td>{jakiKuota}</Td>
+                              <Td>{totalKuota}</Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
