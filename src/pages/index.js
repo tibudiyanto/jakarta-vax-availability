@@ -64,7 +64,7 @@ const VaxLocation = (location) => {
             return (
               <Popover key={id}>
                 <PopoverTrigger>
-                  <Button margin={0}>{id}</Button>
+                  <Button>{id}</Button>
                 </PopoverTrigger>
                 <PopoverContent>
                   <PopoverCloseButton />
