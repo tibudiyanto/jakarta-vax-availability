@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Heading,
   Popover,
@@ -15,14 +16,13 @@ import {
   Th,
   Thead,
   Tr,
-  Box,
   useColorModeValue as mode,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
 import { hasQuota } from '../helpers/QuotaHelpers';
 
-export default function VaxLocation({ location }) {
+export default function VaxLocation({ loading, location, isUserLocationExist }) {
   const {
     nama_lokasi_vaksinasi: namaLokasi,
     // alamat_lokasi_vaksinasi: alamatLokasi,
@@ -31,7 +31,8 @@ export default function VaxLocation({ location }) {
     kelurahan,
     // rt,
     // rw,
-    jadwal
+    jadwal,
+    detail_lokasi
   } = location;
 
   const isCurrentLocationHasQuota = hasQuota(jadwal);
@@ -42,57 +43,75 @@ export default function VaxLocation({ location }) {
       borderRadius="md"
       borderWidth={1}
       h="full"
-      p={4}
       w="full"
     >
-      <Heading size="sm">{namaLokasi}</Heading>
-      <Text>
-        KEC/KEL: {kecamatan} / {kelurahan}
-      </Text>
-      <Text>{wilayah}</Text>
-      <Spacer />
-      {!isCurrentLocationHasQuota && <Box color="red">Kuota Habis</Box>}
-      <Wrap>
-        {jadwal.map(({ id: jadwalId, waktu }) => (
-          <WrapItem key={jadwalId}>
-            <Popover isLazy>
-              <PopoverTrigger>
-                <Button size="sm" variant="outline">
-                  {jadwalId}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent w={['95vw', '30vw']}>
-                <PopoverArrow />
-                <PopoverBody>
-                  <Table>
-                    <Thead>
-                      <Tr>
-                        <Th>Waktu</Th>
-                        <Th>Sisa Kuota</Th>
-                        <Th>Jaki Kuota</Th>
-                        <Th>Total Kuota</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {waktu.map(({ label, id, kuota }) => {
-                        const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
-                        return (
-                          <Tr key={id}>
-                            <Td>{label}</Td>
-                            <Td>{sisaKuota}</Td>
-                            <Td>{jakiKuota}</Td>
-                            <Td>{totalKuota}</Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
-          </WrapItem>
-        ))}
-      </Wrap>
+      {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
+        <Box
+          bg={mode('gray.100', 'gray.600')}
+          w="100%"
+          p={2}
+          borderTopRadius="md"
+          borderBottomWidth={1}
+          borderColor={mode('blackAlpha.200', 'whiteAlpha.200')}
+        >
+          <Text align="center">
+            JARAK DARI LOKASI ANDA: <b>{detail_lokasi[0].distance}</b> KM
+          </Text>
+        </Box>
+      ) : (
+        ''
+      )}
+
+      <Stack h="full" w="full" p={4}>
+        <Heading size="sm">{namaLokasi}</Heading>
+        <Text>
+          KEC/KEL: {kecamatan} / {kelurahan}
+        </Text>
+        <Text>{wilayah}</Text>
+        {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
+        <Spacer />
+        <Wrap>
+          {jadwal.map(({ id: jadwalId, waktu }) => (
+            <WrapItem key={jadwalId}>
+              <Popover isLazy>
+                <PopoverTrigger>
+                  <Button size="sm" variant="outline">
+                    {jadwalId}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent w={['95vw', '30vw']}>
+                  <PopoverArrow />
+                  <PopoverBody>
+                    <Table>
+                      <Thead>
+                        <Tr>
+                          <Th>Waktu</Th>
+                          <Th>Sisa Kuota</Th>
+                          <Th>Jaki Kuota</Th>
+                          <Th>Total Kuota</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {waktu.map(({ label, id, kuota }) => {
+                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
+                          return (
+                            <Tr key={id}>
+                              <Td>{label}</Td>
+                              <Td>{sisaKuota}</Td>
+                              <Td>{jakiKuota}</Td>
+                              <Td>{totalKuota}</Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            </WrapItem>
+          ))}
+        </Wrap>
+      </Stack>
     </Stack>
   );
 }
