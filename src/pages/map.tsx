@@ -22,7 +22,7 @@ import {
   Select,
   Text
 } from '@chakra-ui/react';
-import * as MapboxGl from 'mapbox-gl';
+import MapboxGl from 'mapbox-gl';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 
