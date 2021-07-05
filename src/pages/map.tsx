@@ -92,7 +92,7 @@ export async function getStaticProps({ params: _ }) {
   };
 }
 
-const Index = ({ schedule }) => {
+const MapPage = ({ schedule }) => {
   const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
   const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
@@ -185,4 +185,4 @@ const Index = ({ schedule }) => {
   );
 };
 
-export default Index;
+export default MapPage;
