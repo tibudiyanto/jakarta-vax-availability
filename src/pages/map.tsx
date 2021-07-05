@@ -95,7 +95,7 @@ export async function getStaticProps({ params: _ }) {
   };
 }
 
-const Index = ({ schedule }) => {
+const MapPage = ({ schedule }) => {
   const [isGetGeoPermission, setGetGeoPermission] = React.useState(false);
   const geoObj = useGeolocation({
     when: isGetGeoPermission
@@ -247,4 +247,4 @@ const Index = ({ schedule }) => {
   );
 };
 
-export default Index;
+export default MapPage;
