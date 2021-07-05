@@ -1,6 +1,6 @@
-import fetch from "isomorphic-unfetch";
+import fetch from 'isomorphic-unfetch';
 
-const scheduleEndpoint = "https://vaksin-jakarta.yggdrasil.id/";
+const scheduleEndpoint = 'https://vaksin-jakarta.yggdrasil.id/';
 
 const getSchedule = async () => {
   const payload = await fetch(scheduleEndpoint);

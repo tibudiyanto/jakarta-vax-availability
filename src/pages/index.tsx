@@ -1,46 +1,44 @@
-import React from "react";
+import React from 'react';
+
+import { Container } from '../components/Container';
+import { DarkModeSwitch } from '../components/DarkModeSwitch';
+import { getSchedule } from '../data/getSchedule';
+
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Box,
-  Link as ChakraLink,
-  Badge,
-  Text,
-  Heading,
-  Wrap,
-  Stack,
-  Select,
-  Input,
-  useDisclosure,
   Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
   Flex,
+  Heading,
+  Input,
   Link,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
   SimpleGrid,
-  useColorMode,
-} from "@chakra-ui/react";
-import { Container } from "../components/Container";
-import { DarkModeSwitch } from "../components/DarkModeSwitch";
-import { getSchedule } from "../data/getSchedule";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { getDistanceFromLatLonInKm } from "../utils/location";
+  Stack,
+  Text,
+  useColorMode
+} from '@chakra-ui/react';
+
+import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
   return {
     props: {
-      schedule,
+      schedule
     },
-    revalidate: 60,
+    revalidate: 60
   };
 }
 
-const VaxLocationDetail = (location) => {};
+const ignoredVaxLocationDetail = _location => {};
 
-const VaxLocation = (props) => {
+const VaxLocation = props => {
   const {
     loading,
     nama_lokasi_vaksinasi: namaLokasi,
@@ -52,27 +50,21 @@ const VaxLocation = (props) => {
     rw,
     jadwal,
     detail_lokasi,
-    isUserLocationExist,
+    isUserLocationExist
   } = props;
 
   const { colorMode } = useColorMode();
 
-  const distanceBg = { light: "gray.200", dark: "gray.800" };
+  const distanceBg = { light: 'gray.200', dark: 'gray.800' };
 
   return (
-    <Container
-      border={"1px solid black"}
-      alignItems="start"
-      minHeight={["10em"]}
-    >
+    <Container border={'1px solid black'} alignItems="start" minHeight={['10em']}>
       {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
         <Box bg={distanceBg[colorMode]} w="100%" p={2}>
-          <Text align="center">
-            JARAK DARI LOKASI ANDA : {detail_lokasi[0].distance} KM
-          </Text>
+          <Text align="center">JARAK DARI LOKASI ANDA : {detail_lokasi[0].distance} KM</Text>
         </Box>
       ) : (
-        ""
+        ''
       )}
       <Stack padding={1} w="100%">
         <Text>{namaLokasi}</Text>
@@ -80,7 +72,7 @@ const VaxLocation = (props) => {
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
         <Text>{wilayah}</Text>
-        <Stack direction="row" wrap="wrap" gridRowGap={2} paddingBlockEnd={2}>
+        <Stack direction="row" gridRowGap={2} paddingBlockEnd={2} wrap="wrap">
           {jadwal.map(({ id, waktu }) => {
             return (
               <Popover key={id}>
@@ -107,24 +99,22 @@ const VaxLocation = (props) => {
 };
 
 const Index = ({ schedule }) => {
-  const [searchBy, setSearchBy] = React.useState("kecamatan");
-  const [searchKeyword, setSearchKeyword] = React.useState("");
+  const [searchBy, setSearchBy] = React.useState('kecamatan');
+  const [searchKeyword, setSearchKeyword] = React.useState('');
   const [userLocation, setUserLocation] = React.useState({
     loading: false,
     lat: 0,
     lon: 0,
-    error: "",
+    error: ''
   });
 
   React.useEffect(() => {
     if (window && window.navigator && window.navigator.permissions) {
-      window.navigator.permissions
-        .query({ name: "geolocation" })
-        .then((status) => {
-          if (status.state === "granted") {
-            getUserLocation();
-          }
-        });
+      window.navigator.permissions.query({ name: 'geolocation' }).then(status => {
+        if (status.state === 'granted') {
+          getUserLocation();
+        }
+      });
     }
   }, []);
 
@@ -139,53 +129,44 @@ const Index = ({ schedule }) => {
        * for each item in `detail_lokasi` and sort it by the nearest.
        */
       return schedule
-        .filter((props) => {
-          return props[searchBy]
-            .toLowerCase()
-            .includes(searchKeyword.toLowerCase());
+        .filter(props => {
+          return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
         })
-        .map((item) => ({
+        .map(item => ({
           ...item,
           detail_lokasi:
             item.detail_lokasi.length > 0
               ? item.detail_lokasi
-                  .map((loc) => ({
+                  .map(loc => ({
                     ...loc,
                     distance: getDistanceFromLatLonInKm(
                       userLocation.lat,
                       userLocation.lon,
                       Number(loc.lat),
                       Number(loc.lon)
-                    ),
+                    )
                   }))
                   .sort((a, b) => a.distance - b.distance)
-              : item.detail_lokasi,
+              : item.detail_lokasi
         }))
         .sort((a, b) => {
           if (a.detail_lokasi[0] === undefined) {
             return 1;
           } else if (b.detail_lokasi[0] === undefined) {
             return -1;
-          } else if (
-            a.detail_lokasi[0].distance &&
-            b.detail_lokasi[0].distance
-          ) {
-            return a.detail_lokasi[0].distance < b.detail_lokasi[0].distance
-              ? -1
-              : 1;
+          } else if (a.detail_lokasi[0].distance && b.detail_lokasi[0].distance) {
+            return a.detail_lokasi[0].distance < b.detail_lokasi[0].distance ? -1 : 1;
           }
         });
     }
 
-    return schedule.filter((props) => {
-      return props[searchBy]
-        .toLowerCase()
-        .includes(searchKeyword.toLowerCase());
+    return schedule.filter(props => {
+      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
     });
   };
 
   const getUserLocation = () => {
-    setUserLocation((prev) => ({ ...prev, loading: true }));
+    setUserLocation(prev => ({ ...prev, loading: true }));
 
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
@@ -193,32 +174,32 @@ const Index = ({ schedule }) => {
           loading: false,
           lat: coords.latitude,
           lon: coords.longitude,
-          error: "",
+          error: ''
         });
       },
-      (error) => {
+      error => {
         console.error(`Get geolocation error: ${error.message}`);
         setUserLocation({
           loading: false,
           lat: 0,
           lon: 0,
-          error: "Get geolocation error",
+          error: 'Get geolocation error'
         });
       },
       {
         enableHighAccuracy: false,
         timeout: Infinity,
-        maximumAge: 0,
+        maximumAge: 0
       }
     );
   };
 
   const handleButtonClickUserLocation = () => {
     if (!navigator || !navigator.geolocation) {
-      console.error("Geolocation is not supported");
-      setUserLocation((prev) => ({
+      console.error('Geolocation is not supported');
+      setUserLocation(prev => ({
         ...prev,
-        error: "Geolocation is not supported",
+        error: 'Geolocation is not supported'
       }));
       return;
     }
@@ -230,20 +211,12 @@ const Index = ({ schedule }) => {
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
       <Link href="/map">
-        <Button
-          position="absolute"
-          right={20}
-          top={2}
-          leftIcon={<ExternalLinkIcon />}
-          variant="solid"
-        >
+        <Button leftIcon={<ExternalLinkIcon />} position="absolute" right={20} top={2} variant="solid">
           Peta
         </Button>
       </Link>
       <Stack paddingInline={[4, 6]} width="100%">
-        <Heading paddingBlockStart="8">
-          Lokasi dan Jadwal Vaksinasi DKI Jakarta
-        </Heading>
+        <Heading paddingBlockStart="8">Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
         <Flex direction="row">
           <Button
@@ -253,16 +226,14 @@ const Index = ({ schedule }) => {
             isLoading={userLocation.loading}
             isDisabled={Boolean(userLocation.lat && userLocation.lon)}
           >
-            {userLocation.lat && userLocation.lon
-              ? "Lokasi Ditemukan"
-              : "Dapatkan Lokasi Anda"}
+            {userLocation.lat && userLocation.lon ? 'Lokasi Ditemukan' : 'Dapatkan Lokasi Anda'}
           </Button>
           <Select
             mr={2}
             flexShrink={0}
             value={searchBy}
             width="auto"
-            onChange={(e) => {
+            onChange={e => {
               setSearchBy(e.target.value);
             }}
           >
@@ -270,25 +241,23 @@ const Index = ({ schedule }) => {
             <option value="kelurahan">Kelurahan</option>
           </Select>
           <Input
+            onChange={e => setSearchKeyword(e.target.value)}
             placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-          ></Input>
+          />
         </Flex>
 
         <SimpleGrid columns={[1, 2, 3]} spacing={2}>
-          {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
-            (l, index) => {
-              return (
-                <VaxLocation
-                  key={index}
-                  loading={userLocation.loading}
-                  isUserLocationExist={userLocation.lat && userLocation.lon}
-                  {...l}
-                />
-              );
-            }
-          )}
+          {scheduleToRender({ schedule, searchBy, searchKeyword }).map((l, index) => {
+            return (
+              <VaxLocation
+                key={index}
+                loading={userLocation.loading}
+                isUserLocationExist={userLocation.lat && userLocation.lon}
+                {...l}
+              />
+            );
+          })}
         </SimpleGrid>
       </Stack>
     </Container>
