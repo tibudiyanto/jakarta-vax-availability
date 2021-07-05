@@ -16,11 +16,14 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   Flex,
+  Link,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
 import React from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -50,7 +53,6 @@ const VaxLocation = (location) => {
     <Container
       border={"1px solid black"}
       alignItems="start"
-      w={["100vw", "30vw"]}
       minHeight={["10em"]}
     >
       <Stack padding={1} w="100%">
@@ -149,6 +151,17 @@ const Index = ({ schedule }) => {
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
+      <Link href="/map">
+        <Button
+          position="absolute"
+          right={20}
+          top={2}
+          leftIcon={<ExternalLinkIcon />}
+          variant="solid"
+        >
+          Peta
+        </Button>
+      </Link>
       <Stack paddingInline={[4, 6]} width="100%">
         <Heading paddingBlockStart="8">
           Lokasi dan Jadwal Vaksinasi DKI Jakarta
@@ -182,15 +195,13 @@ const Index = ({ schedule }) => {
           ></Input>
         </Flex>
 
-        <Container w="100%">
-          <Wrap w="98%">
-            {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
-              (l, index) => {
-                return <VaxLocation key={index} {...l} />;
-              }
-            )}
-          </Wrap>
-        </Container>
+        <SimpleGrid columns={[1,2,3]} spacing={2}>
+          {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
+            (l, index) => {
+              return <VaxLocation key={index} {...l} />;
+            }
+          )}
+        </SimpleGrid>
       </Stack>
     </Container>
   );
