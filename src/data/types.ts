@@ -15,10 +15,9 @@ export interface VaccinationData {
   updated_at?: null;
   pcare: boolean;
   jadwal?: Jadwal[] | null;
-  detail_lokasi?: (DetailLokasiEntity | null)[] | null;
+  detail_lokasi?: (DetailLokasi | null)[] | null;
   last_updated_at: string;
 }
-
 export interface Jadwal {
   id: string;
   label: string;
@@ -38,7 +37,7 @@ export interface Kuota {
   jakiKuota?: number | null;
 }
 
-export interface DetailLokasiEntity {
+export interface DetailLokasi {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -52,3 +51,5 @@ export interface DetailLokasiEntity {
   type: string;
   importance: number;
 }
+
+export type VaccinationDataFields = keyof VaccinationData;
