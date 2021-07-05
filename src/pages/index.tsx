@@ -88,7 +88,7 @@ const VaxLocation = (location) => {
 };
 
 const Index = ({ schedule }) => {
-  const [searchBy, setSearchBy] = React.useState("kecamatan");
+  const [searchBy, setSearchBy] = React.useState("nama_lokasi_vaksinasi");
   const [searchKeyword, setSearchKeyword] = React.useState("");
 
   const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
@@ -131,11 +131,13 @@ const Index = ({ schedule }) => {
               setSearchBy(e.target.value);
             }}
           >
+            <option value="nama_lokasi_vaksinasi">Nama Lokasi</option>
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
+            <option value="wilayah">Wilayah</option>
           </Select>
           <Input
-            placeholder="cari kecamatan / kelurahan"
+            placeholder="cari nama lokasi / wilayah / kecamatan / kelurahan"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           ></Input>
