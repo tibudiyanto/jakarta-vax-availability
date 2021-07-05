@@ -21,6 +21,15 @@
     "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
+    "eslint": "^7",
+    "eslint-config-kentcdodds": "^19",
+    "eslint-config-next": "^11",
+    "eslint-config-prettier": "^8",
+    "eslint-plugin-jsx-a11y": "^6",
+    "eslint-plugin-prettier": "^3",
+    "eslint-plugin-react": "^7",
+    "eslint-plugin-simple-import-sort": "^7",
+    "prettier": "^2",
     "typescript": "^4.3.5"
   },
   "license": "MIT"
