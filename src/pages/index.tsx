@@ -47,17 +47,10 @@ const VaxLocation = (location) => {
     rt,
     rw,
     jadwal,
-    detail_lokasi
   } = location;
 
-
-  let routeLink;
-  if (detail_lokasi && detail_lokasi[0]) {
-      const lat = parseFloat(detail_lokasi[0].lat)
-      const lon = parseFloat(detail_lokasi[0].lon)
-      routeLink = `https://www.google.com/maps?saddr=My+Location&daddr=${lat},${lon}`
-  }
-
+    
+  const routeLink = `https://www.google.com/maps?saddr=My+Location&daddr=${namaLokasi}`
 
   return (
     <Container
@@ -94,11 +87,9 @@ const VaxLocation = (location) => {
         </Stack>
       </Stack>
         <Link 
-          target="blank"
           href={routeLink}
           h="100%"
           w="100%"
-          disabled={!routeLink}
         >
           <Flex 
             padding={1}
@@ -107,12 +98,11 @@ const VaxLocation = (location) => {
             justifyContent="flex-end"
           >
             <Button 
-              disabled={!routeLink}
               colorScheme="teal"
               variant="outline"
               w="100%"
             >
-              {routeLink ? 'Lihat Rute' : 'Rute belum tersedia'}
+              Lihat Rute
             </Button>
           </Flex>
         </Link>
