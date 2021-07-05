@@ -15,6 +15,7 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
+  Flex,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
@@ -31,7 +32,7 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const VaxLocationDetail = (location) => {};
+const VaxLocationDetail = (location) => { };
 
 const VaxLocation = (location) => {
   const {
@@ -50,7 +51,7 @@ const VaxLocation = (location) => {
       border={"1px solid black"}
       alignItems="start"
       w={["100vw", "30vw"]}
-      h={["10em"]}
+      minHeight={["10em"]}
     >
       <Stack padding={1} w="100%">
         <Text>{namaLokasi}</Text>
@@ -58,7 +59,7 @@ const VaxLocation = (location) => {
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
         <Text>{wilayah}</Text>
-        <Stack direction="row">
+        <Stack direction="row" wrap="wrap" gridRowGap={2} paddingBlockEnd={2}>
           {jadwal.map(({ id, waktu }) => {
             return (
               <Popover key={id}>
@@ -100,20 +101,21 @@ const Index = ({ schedule }) => {
   };
 
   return (
-    <Container minHeight="100vh">
+    <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
-      <Stack>
-        <Heading>Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
+      <Stack paddingInline={[4, 6]} width="100%">
+        <Heading paddingBlockStart="8">Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
-        <Container direction="row">
+        <Flex direction="row">
           <Select
-            flexBasis={"30vw"}
-            flexGrow={0}
+            flexShrink={0}
             value={searchBy}
             marginRight={1}
+            width="auto"
             onChange={(e) => {
               setSearchBy(e.target.value);
             }}
+            fontSize={[14, 16]}
           >
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
@@ -122,8 +124,9 @@ const Index = ({ schedule }) => {
             placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
+            fontSize={[14, 16]}
           ></Input>
-        </Container>
+        </Flex>
 
         <Container w="100%">
           <Wrap w="98%">
