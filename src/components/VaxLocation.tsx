@@ -120,8 +120,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
         </Wrap>
         <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
           <Text align="right" as="i" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
-            Informasi terakhir diperbarui{' '}
-            {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
+            Diperbarui {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
           </Text>
         </Tooltip>
       </Stack>
