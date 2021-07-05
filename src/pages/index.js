@@ -47,7 +47,12 @@ const VaxLocation = (location) => {
     rt,
     rw,
     jadwal,
+    detail_lokasi: detailLokasi,
   } = location;
+
+  const mapsUrl = detailLokasi[0] != null
+    ? `https://www.google.com/maps/search/${encodeURIComponent(`${detailLokasi[0].lat}, ${detailLokasi[0].lon}`)}`
+    : `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
 
   return (
     <Container
@@ -56,7 +61,7 @@ const VaxLocation = (location) => {
       minHeight={["10em"]}
     >
       <Stack padding={1} w="100%">
-        <Link href={`https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`} isExternal>
+        <Link href={mapsUrl} isExternal>
           <Heading size="sm">
             {namaLokasi} <ExternalLinkIcon mx="2px"/>
           </Heading>
