@@ -21,11 +21,14 @@ import {
   PopoverTrigger,
   Select,
   Text,
+  Button,
   useColorMode
 } from '@chakra-ui/react';
 import MapboxGl from 'mapbox-gl';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
+import { useGeolocation } from 'rooks';
+import { getMapBounds, LngLat } from 'utils/map';
 
 function Container(props) {
   const { colorMode } = useColorMode();
@@ -93,6 +96,11 @@ export async function getStaticProps({ params: _ }) {
 }
 
 const Index = ({ schedule }) => {
+  const [isGetGeoPermission, setGetGeoPermission] = React.useState(false);
+  const geoObj = useGeolocation({
+    when: isGetGeoPermission
+  });
+
   const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
   const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
@@ -130,6 +138,18 @@ const Index = ({ schedule }) => {
     lokasi: item
   }));
 
+  React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (map && geoObj && geoObj.lat && geoObj.lng) {
+      const listOfCoordinate = coordinates.map(data => ({
+        lat: data.lat,
+        lng: data.lng
+      }));
+      listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
+      map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
+    }
+  }, [coordinates, geoObj, map]);
+
   return (
     <Container minHeight="100vh">
       <Map
@@ -139,7 +159,9 @@ const Index = ({ schedule }) => {
         }}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
-          loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
+          if (!geoObj) {
+            loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
+          }
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
@@ -151,6 +173,29 @@ const Index = ({ schedule }) => {
             </Marker>
           );
         })}
+
+        {geoObj && geoObj.lat && (
+          <Marker coordinates={[geoObj.lng, geoObj.lat]}>
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  style={{
+                    backgroundColor: 'var(--chakra-colors-blue-300)',
+                    borderRadius: '50%',
+                    width: 20,
+                    height: 20,
+                    border: '4px solid var(--chakra-colors-blue-400)'
+                  }}
+                />
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader>{'Lokasi anda sekarang'}</PopoverHeader>
+              </PopoverContent>
+            </Popover>
+          </Marker>
+        )}
       </Map>
       <Box height={80} left={0} maxWidth={450} position="fixed" top={0} width="100%" zIndex={999999999999}>
         <Box bg="black" borderRadius={10} margin={2} padding={2}>
@@ -159,6 +204,14 @@ const Index = ({ schedule }) => {
             <Link href="/" passHref>
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
             </Link>
+            <Button
+              aria-label="Gunakan Lokasi Anda"
+              label="Gunakan Lokasi Anda"
+              borderRadius={4}
+              onClick={() => setGetGeoPermission(true)}
+            >
+              📍
+            </Button>
             <Select
               flexShrink={0}
               fontSize={[14, 16]}
