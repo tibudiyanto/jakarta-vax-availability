@@ -7,10 +7,10 @@ import { getSchedule } from '../data/getSchedule';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Box, Flex, HStack, IconButton, Input, Select, useColorMode } from '@chakra-ui/react';
+import VaxLocation from 'components/VaxLocation';
 import MapboxGl from 'mapbox-gl';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
-import VaxLocation from 'components/VaxLocation';
 
 function Container(props) {
   const { colorMode } = useColorMode();
@@ -49,10 +49,10 @@ const Mark = () => (
     bg="red"
     borderColor="darkred"
     borderRadius="50%"
-    width="20px"
-    height="20px"
     borderStyle="solid"
     borderWidth="4px"
+    height="20px"
+    width="20px"
   />
 );
 
@@ -104,7 +104,7 @@ const MapPage = ({ schedule }) => {
         <>
           {coordinates.map((coordinate, i) => {
             return (
-              //@ts-ignore
+              //@ts-expect-error
               <Marker key={i} coordinates={coordinate}>
                 <Box
                   onClick={() => {
@@ -126,9 +126,9 @@ const MapPage = ({ schedule }) => {
           })}
           {activeLoc && (
             <Popup
-              anchor="bottom"
               key={activeLoc.osm_id}
-              //@ts-ignore
+              anchor="bottom"
+              //@ts-expect-error
               coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
               style={{ marginTop: -20, padding: 0 }}
             >

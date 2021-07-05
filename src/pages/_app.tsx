@@ -1,7 +1,8 @@
+import '../styles/global.css';
+
 import Footer from '../components/Footer';
 import ToggleColorMode from '../components/ToggleColorMode';
 import theme from '../theme';
-import '../styles/global.css';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import Head from 'next/head';
