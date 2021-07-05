@@ -111,14 +111,14 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
           ))}
         </Wrap>
         <Flex flexDirection="row" justifyContent="space-between">
-          {hasDistanceFromLocation && (
+          {hasDistanceFromLocation ? (
             <HStack spacing={2}>
               <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
               <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
                 <InfoOutlineIcon />
               </Tooltip>
             </HStack>
-          )}
+          ) : null}
           <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
             <Text align="right" as="span" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
               Diperbarui{' '}
