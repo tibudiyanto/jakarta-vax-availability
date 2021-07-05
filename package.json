@@ -1,13 +1,14 @@
 {
-  "name": "with-chakra-ui",
+  "name": "jakarta-vax-availability",
+  "description": "Lokasi dan Jadwal Vaksinasi DKI Jakarta",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next",
+    "lint": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
     "start": "next start",
-    "lint": "eslint \"**/*.{ts,tsx}\"",
-    "format": "prettier --write \"./**/*.{ts,tsx}\"",
-    "validate": "yarn lint"
+    "type-check": "tsc --noEmit",
+    "validate": "yarn lint && yarn type-check"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.0",
@@ -22,11 +23,17 @@
     "react-dom": "^17.0.2",
     "react-mapbox-gl": "^5.1.1"
   },
-  "license": "MIT",
   "devDependencies": {
     "eslint": "^7.30.0",
+    "eslint-config-kentcdodds": "^19",
     "eslint-config-next": "^11.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
     "prettier": "^2.3.2",
     "typescript": "^4.3.5"
-  }
+  },
+  "license": "MIT"
 }
