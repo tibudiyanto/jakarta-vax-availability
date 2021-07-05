@@ -140,13 +140,15 @@ const MapPage = ({ schedule }) => {
 
   const setInitialMapBound = (mapBox: MapboxGl.Map) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
-      const permission = data.state === 'granted';
-      setGetGeoPermission(permission);
-      if (!permission) {
-        mapBox.fitBounds(getMapBounds(coordinates), { padding: 100 });
-      }
-    });
+    if (window && window.navigator && window.navigator.permissions) {
+      window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
+        const permission = data.state === 'granted';
+        setGetGeoPermission(permission);
+        if (!permission) {
+          mapBox.fitBounds(getMapBounds(coordinates), { padding: 100 });
+        }
+      });
+    }
   };
 
   React.useEffect(() => {
@@ -170,7 +172,10 @@ const MapPage = ({ schedule }) => {
         }}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
-          setInitialMapBound(loadedMap);
+          loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
+          setTimeout(() => {
+            setInitialMapBound(loadedMap);
+          }, 500);
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
