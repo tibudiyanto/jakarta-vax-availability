@@ -3,12 +3,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import React, { Fragment } from 'react';
 
-import { Container } from '../components/Container';
 import { getSchedule } from '../data/getSchedule';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Flex,
   HStack,
   IconButton,
   Input,
@@ -19,11 +19,30 @@ import {
   PopoverContent,
   PopoverHeader,
   Select,
-  Text
+  Text,
+  useColorMode
 } from '@chakra-ui/react';
 import MapboxGl from 'mapbox-gl';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
+
+function Container(props) {
+  const { colorMode } = useColorMode();
+
+  const bgColor = { light: 'gray.50', dark: 'gray.900' };
+
+  const color = { light: 'black', dark: 'white' };
+  return (
+    <Flex
+      alignItems="center"
+      bg={bgColor[colorMode]}
+      color={color[colorMode]}
+      direction="column"
+      justifyContent="flex-start"
+      {...props}
+    />
+  );
+}
 
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY
