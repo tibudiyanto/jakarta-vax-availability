@@ -1,9 +1,10 @@
 {
-  "name": "with-chakra-ui",
+  "name": "jakarta-vax-availability",
+  "description": "Lokasi dan Jadwal Vaksinasi DKI Jakarta",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next",
     "start": "next start"
   },
   "dependencies": {
@@ -19,8 +20,8 @@
     "react-dom": "^17.0.2",
     "react-mapbox-gl": "^5.1.1"
   },
-  "license": "MIT",
   "devDependencies": {
     "typescript": "^4.3.5"
-  }
+  },
+  "license": "MIT"
 }
