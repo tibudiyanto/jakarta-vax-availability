@@ -139,7 +139,7 @@ const Index = ({ schedule }) => {
         left={0}
         width="100%"
         maxWidth={450}
-        height={150}
+        height={80}
         zIndex={999999999999}
       >
         <Box margin={2} bg="black" borderRadius={10} padding={2}>
