@@ -1,4 +1,6 @@
+import React from "react";
 import {
+  Box,
   Link as ChakraLink,
   Badge,
   Text,
@@ -18,12 +20,13 @@ import {
   Flex,
   Link,
   SimpleGrid,
+  useColorMode,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
-import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { getDistanceFromLatLonInKm } from "../utils/location";
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -37,8 +40,9 @@ export async function getStaticProps({ params }) {
 
 const VaxLocationDetail = (location) => {};
 
-const VaxLocation = (location) => {
+const VaxLocation = (props) => {
   const {
+    loading,
     nama_lokasi_vaksinasi: namaLokasi,
     alamat_lokasi_vaksinasi: alamatLokasi,
     wilayah,
@@ -47,7 +51,13 @@ const VaxLocation = (location) => {
     rt,
     rw,
     jadwal,
-  } = location;
+    detail_lokasi,
+    isUserLocationExist,
+  } = props;
+
+  const { colorMode } = useColorMode();
+
+  const distanceBg = { light: "gray.200", dark: "gray.800" };
 
   return (
     <Container
@@ -55,6 +65,15 @@ const VaxLocation = (location) => {
       alignItems="start"
       minHeight={["10em"]}
     >
+      {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
+        <Box bg={distanceBg[colorMode]} w="100%" p={2}>
+          <Text align="center">
+            JARAK DARI LOKASI ANDA : {detail_lokasi[0].distance} KM
+          </Text>
+        </Box>
+      ) : (
+        ""
+      )}
       <Stack padding={1} w="100%">
         <Text>{namaLokasi}</Text>
         <Text>
@@ -97,10 +116,65 @@ const Index = ({ schedule }) => {
     error: "",
   });
 
+  React.useEffect(() => {
+    if (window && window.navigator && window.navigator.permissions) {
+      window.navigator.permissions
+        .query({ name: "geolocation" })
+        .then((status) => {
+          if (status.state === "granted") {
+            getUserLocation();
+          }
+        });
+    }
+  }, []);
+
   const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
-    console.log(userLocation);
-    if (!searchKeyword.length) {
+    if (!searchKeyword.length && !userLocation.lat && !userLocation.lon) {
       return schedule;
+    }
+
+    if (userLocation.lat && userLocation.lon) {
+      /**
+       * Add distance from current location to the vax location
+       * for each item in `detail_lokasi` and sort it by the nearest.
+       */
+      return schedule
+        .filter((props) => {
+          return props[searchBy]
+            .toLowerCase()
+            .includes(searchKeyword.toLowerCase());
+        })
+        .map((item) => ({
+          ...item,
+          detail_lokasi:
+            item.detail_lokasi.length > 0
+              ? item.detail_lokasi
+                  .map((loc) => ({
+                    ...loc,
+                    distance: getDistanceFromLatLonInKm(
+                      userLocation.lat,
+                      userLocation.lon,
+                      Number(loc.lat),
+                      Number(loc.lon)
+                    ),
+                  }))
+                  .sort((a, b) => a.distance - b.distance)
+              : item.detail_lokasi,
+        }))
+        .sort((a, b) => {
+          if (a.detail_lokasi[0] === undefined) {
+            return 1;
+          } else if (b.detail_lokasi[0] === undefined) {
+            return -1;
+          } else if (
+            a.detail_lokasi[0].distance &&
+            b.detail_lokasi[0].distance
+          ) {
+            return a.detail_lokasi[0].distance < b.detail_lokasi[0].distance
+              ? -1
+              : 1;
+          }
+        });
     }
 
     return schedule.filter((props) => {
@@ -111,15 +185,6 @@ const Index = ({ schedule }) => {
   };
 
   const getUserLocation = () => {
-    if (!navigator || !navigator.geolocation) {
-      console.error("Geolocation is not supported");
-      setUserLocation((prev) => ({
-        ...prev,
-        error: "Geolocation is not supported",
-      }));
-      return;
-    }
-
     setUserLocation((prev) => ({ ...prev, loading: true }));
 
     navigator.geolocation.getCurrentPosition(
@@ -148,6 +213,19 @@ const Index = ({ schedule }) => {
     );
   };
 
+  const handleButtonClickUserLocation = () => {
+    if (!navigator || !navigator.geolocation) {
+      console.error("Geolocation is not supported");
+      setUserLocation((prev) => ({
+        ...prev,
+        error: "Geolocation is not supported",
+      }));
+      return;
+    }
+
+    getUserLocation();
+  };
+
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
@@ -171,10 +249,13 @@ const Index = ({ schedule }) => {
           <Button
             flexShrink={0}
             mr={2}
-            onClick={() => getUserLocation()}
+            onClick={handleButtonClickUserLocation}
             isLoading={userLocation.loading}
+            isDisabled={Boolean(userLocation.lat && userLocation.lon)}
           >
-            Dapatkan Lokasi Anda
+            {userLocation.lat && userLocation.lon
+              ? "Lokasi Ditemukan"
+              : "Dapatkan Lokasi Anda"}
           </Button>
           <Select
             mr={2}
@@ -195,10 +276,17 @@ const Index = ({ schedule }) => {
           ></Input>
         </Flex>
 
-        <SimpleGrid columns={[1,2,3]} spacing={2}>
+        <SimpleGrid columns={[1, 2, 3]} spacing={2}>
           {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
             (l, index) => {
-              return <VaxLocation key={index} {...l} />;
+              return (
+                <VaxLocation
+                  key={index}
+                  loading={userLocation.loading}
+                  isUserLocationExist={userLocation.lat && userLocation.lon}
+                  {...l}
+                />
+              );
             }
           )}
         </SimpleGrid>
