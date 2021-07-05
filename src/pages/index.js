@@ -7,6 +7,14 @@ import {
   Stack,
   Select,
   Input,
+  useDisclosure,
+  Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
@@ -22,6 +30,8 @@ export async function getStaticProps({ params }) {
     revalidate: 60,
   };
 }
+
+const VaxLocationDetail = (location) => {};
 
 const VaxLocation = (location) => {
   const {
@@ -42,15 +52,31 @@ const VaxLocation = (location) => {
       w={["100vw", "30vw"]}
       h={["10em"]}
     >
-      <Stack padding={1}>
+      <Stack padding={1} w="100%">
         <Text>{namaLokasi}</Text>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
         <Text>{wilayah}</Text>
         <Stack direction="row">
-          {jadwal.map(({ id }) => {
-            return <Badge key={id}>{id}</Badge>;
+          {jadwal.map(({ id, waktu }) => {
+            return (
+              <Popover key={id}>
+                <PopoverTrigger>
+                  <Button>{id}</Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <Stack>
+                      {waktu.map(({ label, id }) => {
+                        return <Text key={id}>{label}</Text>;
+                      })}
+                    </Stack>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            );
           })}
         </Stack>
       </Stack>
