@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
+  Link,
   PopoverCloseButton,
   Flex,
   SimpleGrid,
@@ -21,6 +22,7 @@ import {
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import React from "react";
 
 export async function getStaticProps({ params }) {
@@ -54,7 +56,11 @@ const VaxLocation = (location) => {
       minHeight={["10em"]}
     >
       <Stack padding={1} w="100%">
-        <Text>{namaLokasi}</Text>
+        <Link href={`https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`} isExternal>
+          <Heading size="sm">
+            {namaLokasi} <ExternalLinkIcon mx="2px"/>
+          </Heading>
+        </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
