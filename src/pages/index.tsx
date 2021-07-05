@@ -18,12 +18,15 @@ import {
   Flex,
   Link,
   SimpleGrid,
+  Tooltip,
+  useColorMode,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { formatDistanceToNow } from 'date-fns'
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -47,7 +50,9 @@ const VaxLocation = (location) => {
     rt,
     rw,
     jadwal,
+    last_updated_at: lastUpdated,
   } = location;
+  const { colorMode } = useColorMode()
 
   return (
     <Container
@@ -82,6 +87,15 @@ const VaxLocation = (location) => {
             );
           })}
         </Stack>
+        <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
+          <Text 
+            as="i"
+            color={colorMode === "dark" ? "gray.300" : "gray.600"}
+            align="right"
+          >
+            Last updated {formatDistanceToNow(Date.parse(lastUpdated))} ago
+          </Text>
+        </Tooltip>
       </Stack>
     </Container>
   );
