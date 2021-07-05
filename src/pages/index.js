@@ -115,7 +115,6 @@ const Index = ({ schedule }) => {
             onChange={(e) => {
               setSearchBy(e.target.value);
             }}
-            fontSize={[14, 16]}
           >
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
@@ -124,7 +123,6 @@ const Index = ({ schedule }) => {
             placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
-            fontSize={[14, 16]}
           ></Input>
         </Flex>
 
