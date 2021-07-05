@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:prettier/recommended", "prettier", "kentcdodds", "kentcdodds/react", "kentcdodds/jsx-a11y"],
+  "extends": ["plugin:prettier/recommended", "prettier", "kentcdodds", "kentcdodds/react", "kentcdodds/jsx-a11y", "plugin:@next/next/recommended"],
   "plugins": ["prettier", "simple-import-sort"],
   "rules": {
     "import/extensions": ["warn", "never", { "css": "ignorePackages" }],
