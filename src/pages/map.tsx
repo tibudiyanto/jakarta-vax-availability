@@ -138,6 +138,17 @@ const Index = ({ schedule }) => {
     lokasi: item
   }));
 
+  const setInitialMapBound = (mapBox: MapboxGl.Map) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
+      const permission = data.state === 'granted';
+      setGetGeoPermission(permission);
+      if (!permission) {
+        mapBox.fitBounds(getMapBounds(coordinates), { padding: 100 });
+      }
+    });
+  };
+
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (map && geoObj && geoObj.lat && geoObj.lng) {
@@ -159,9 +170,7 @@ const Index = ({ schedule }) => {
         }}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
-          if (!geoObj) {
-            loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
-          }
+          setInitialMapBound(loadedMap);
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
