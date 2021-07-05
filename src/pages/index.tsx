@@ -17,6 +17,7 @@ import {
   PopoverCloseButton,
   Flex,
   Link,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
@@ -52,7 +53,6 @@ const VaxLocation = (location) => {
     <Container
       border={"1px solid black"}
       alignItems="start"
-      w={["100vw", "30vw"]}
       minHeight={["10em"]}
     >
       <Stack padding={1} w="100%">
@@ -131,7 +131,6 @@ const Index = ({ schedule }) => {
             onChange={(e) => {
               setSearchBy(e.target.value);
             }}
-            fontSize={[14, 16]}
           >
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
@@ -140,19 +139,16 @@ const Index = ({ schedule }) => {
             placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
-            fontSize={[14, 16]}
           ></Input>
         </Flex>
 
-        <Container w="100%">
-          <Wrap w="98%">
-            {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
-              (l, index) => {
-                return <VaxLocation key={index} {...l} />;
-              }
-            )}
-          </Wrap>
-        </Container>
+        <SimpleGrid columns={[1,2,3]} spacing={2}>
+          {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
+            (l, index) => {
+              return <VaxLocation key={index} {...l} />;
+            }
+          )}
+        </SimpleGrid>
       </Stack>
     </Container>
   );
