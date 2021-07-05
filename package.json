@@ -14,6 +14,7 @@
     "framer-motion": "^4.0.3",
     "isomorphic-unfetch": "^3.1.0",
     "next": "latest",
+    "pigeon-maps": "^0.19.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

@@ -1,27 +1,72 @@
+import { CloseIcon } from '@chakra-ui/icons';
 import {
-  Link as ChakraLink,
-  Badge,
-  Text,
-  Heading,
-  Wrap,
-  Stack,
-  Select,
-  Input,
-  useDisclosure,
-  Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
-  Flex,
-  SimpleGrid,
+  Button, Flex, Heading, Input, Popover, PopoverBody,
+  PopoverCloseButton, PopoverContent, PopoverTrigger,
+  Select, Stack, Text,
+  SimpleGrid
 } from "@chakra-ui/react";
+import { Map, Marker } from "pigeon-maps";
+import React from "react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
-import React from "react";
+import { flatten } from '../utils/index'
+import { BottomSheet } from '../components/BottomSheet'
+
+export function MapComponent({ locations }) {
+  const locationData = flatten(locations.filter((location) => location.detail_lokasi.length).map((location) => {
+    return location.detail_lokasi
+  }))
+
+  const [selectedLocation, setSelectedLocation] = React.useState(null)
+
+  const onCloseDetailLocation = () => {
+    setSelectedLocation(null)
+  }
+
+  const JAKARTA_GEO_LOC = [-6.200000, 106.816666]
+
+  return (
+    <>
+      <Map height={300} defaultCenter={JAKARTA_GEO_LOC} defaultZoom={11}>
+        {
+          locationData.map((location) => {
+            return (
+              <Marker
+                key={location.place_id}
+                width={50}
+                onClick={() => setSelectedLocation(location)}
+                anchor={[+location.lat, +location.lon]}
+              />
+            )
+          })
+        }
+      </Map>
+        {
+          selectedLocation && (
+            <BottomSheet onClose={onCloseDetailLocation}>
+               <Flex flexDirection="column">
+                  <Flex flexDirection="row" justifyContent="space-between">
+                    <h4 style={{
+                      fontSize: '24px',
+                      marginBottom: '18px',
+                      verticalAlign: 'center'
+                    }}>
+                      <strong>Detail Lokasi</strong>
+                    </h4>
+                    <CloseIcon marginTop="10px" onClick={onCloseDetailLocation} />
+                  </Flex>
+                  <p>
+                    {selectedLocation.display_name}
+                  </p>
+                </Flex>
+            </BottomSheet>
+           
+          )
+        }
+    </>
+  )
+}
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -32,8 +77,6 @@ export async function getStaticProps({ params }) {
     revalidate: 60,
   };
 }
-
-const VaxLocationDetail = (location) => { };
 
 const VaxLocation = (location) => {
   const {
@@ -100,6 +143,8 @@ const Index = ({ schedule }) => {
     });
   };
 
+  const locations = scheduleToRender({ schedule, searchBy, searchKeyword })
+
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
@@ -126,6 +171,8 @@ const Index = ({ schedule }) => {
           ></Input>
         </Flex>
 
+        <MapComponent locations={locations} />
+
         <SimpleGrid columns={[1,2,3]} spacing={2}>
           {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
             (l, index) => {
@@ -133,6 +180,7 @@ const Index = ({ schedule }) => {
             }
           )}
         </SimpleGrid>
+
       </Stack>
     </Container>
   );
