@@ -25,6 +25,9 @@
     "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
+    "@types/mapbox-gl": "^2.3.1",
+    "@types/react": "^17.0.13",
+    "@types/react-dom": "^17.0.8",
     "eslint": "^7.30.0",
     "eslint-config-kentcdodds": "^19",
     "eslint-config-next": "^11.0.1",
