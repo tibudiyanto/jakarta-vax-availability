@@ -18,10 +18,10 @@ import {
   Box,
   HStack,
 } from "@chakra-ui/react";
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import React, { Fragment } from "react";
-import ReactMapboxGl, { Marker } from "react-mapbox-gl";
-import Link from 'next/link';
+import ReactMapboxGl, { Marker, Popup } from "react-mapbox-gl";
+import Link from "next/link";
 import { Container } from "../components/Container";
 import { getSchedule } from "../data/getSchedule";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -29,39 +29,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY,
 });
-
-const Mark = ({ lokasi }) => (
-  <Popover>
-    <PopoverTrigger>
-      <div
-        style={{
-          backgroundColor: "#e74c3c",
-          borderRadius: "50%",
-          width: 20,
-          height: 20,
-          border: "4px solid #eaa29b",
-        }}
-      />
-    </PopoverTrigger>
-    <PopoverContent>
-      <PopoverArrow />
-      <PopoverCloseButton />
-      <PopoverHeader>{lokasi.display_name}</PopoverHeader>
-      <PopoverBody>
-        {lokasi.jadwal.map(({ id, waktu }) => {
-          return (
-            <Fragment key={id}>
-              <Text fontWeight="extrabold">{id}</Text>
-              {waktu.map(({ label, id }) => {
-                return <Text key={id}>{label}</Text>;
-              })}
-            </Fragment>
-          );
-        })}
-      </PopoverBody>
-    </PopoverContent>
-  </Popover>
-);
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
@@ -73,8 +40,21 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const Index = ({ schedule }) => {
+const Mark = () => (
+  <Box
+    bg="red"
+    borderColor="darkred"
+    borderRadius="50%"
+    width="20px"
+    height="20px"
+    borderStyle="solid"
+    borderWidth="4px"
+  />
+);
+
+const MapPage = ({ schedule }) => {
   const [map, setMap] = React.useState(null);
+  const [activeLoc, setActiveLoc] = React.useState(null);
   const [searchBy, setSearchBy] = React.useState("kecamatan");
   const [searchKeyword, setSearchKeyword] = React.useState("");
 
@@ -83,19 +63,11 @@ const Index = ({ schedule }) => {
       return schedule;
     }
     const result = schedule.filter((props) => {
-      return props[searchBy]
-        .toLowerCase()
-        .includes(searchKeyword.toLowerCase()) && props["detail_lokasi"].length;
+      return (
+        props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase()) &&
+        props["detail_lokasi"].length
+      );
     });
-
-
-    const detail = result[0] && result[0].detail_lokasi;
-    if (detail && detail[0] && map) {
-      map.setCenter({
-        lat: parseFloat(detail[0].lat),
-        lng: parseFloat(detail[0].lon),
-      });
-    }
 
     return result;
   };
@@ -122,33 +94,85 @@ const Index = ({ schedule }) => {
           height: "100vh",
           width: "100%",
         }}
+        onDrag={(e) => setActiveLoc(null)}
         onStyleLoad={(map) => {
           setMap(map);
           map.setCenter({ lat: -6.163088, lng: 106.836715 });
         }}
       >
-        {coordinates.map((coordinate, i) => {
-          return (
-            //@ts-ignore
-            <Marker key={i} coordinates={coordinate}>
-              <Mark key={i} lokasi={coordinate.lokasi} />
-            </Marker>
-          );
-        })}
+        <>
+          {coordinates.map((coordinate, i) => {
+            return (
+              //@ts-ignore
+              <Marker key={i} coordinates={coordinate}>
+                <Box
+                  onClick={() => {
+                    setActiveLoc(coordinate.lokasi);
+                    if (map) {
+                      map.easeTo({
+                        center: {
+                          lat: coordinate.lokasi.lat,
+                          lng: coordinate.lokasi.lon,
+                        },
+                        padding: { bottom: 340 },
+                      });
+                    }
+                  }}
+                >
+                  <Mark key={i} />
+                </Box>
+              </Marker>
+            );
+          })}
+          {activeLoc && (
+            <Popup
+              key={activeLoc.osm_id}
+              //@ts-ignore
+              coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
+              style={{ marginLeft: -150, marginTop: 40 }}
+            >
+              <Popover isOpen={true} autoFocus={false}>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton onClick={() => setActiveLoc(null)} />
+                  <PopoverHeader>{activeLoc.display_name}</PopoverHeader>
+                  <PopoverBody maxHeight="300px" overflowY="auto">
+                    {activeLoc.jadwal.map(({ id, waktu }) => {
+                      return (
+                        <Fragment key={id}>
+                          <Text fontWeight="extrabold">{id}</Text>
+                          {waktu.map(({ label, id }) => {
+                            return <Text key={id}>{label}</Text>;
+                          })}
+                        </Fragment>
+                      );
+                    })}
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            </Popup>
+          )}
+        </>
       </Map>
       <Box
         position="fixed"
         top={0}
         left={0}
         width="100%"
-        maxWidth={450}
-        height={80}
-        zIndex={999999999999}
+        maxWidth="450px"
+        height="80px"
+        zIndex={99999}
       >
         <Box margin={2} bg="black" borderRadius={10} padding={2}>
-          <HStack spacing="8px">]
+          <HStack spacing="8px">
+            ]
             <Link href="/" passHref>
-              <IconButton as="a" aria-label="Back to Home" icon={<ArrowBackIcon />} borderRadius={4} />
+              <IconButton
+                as="a"
+                aria-label="Back to Home"
+                icon={<ArrowBackIcon />}
+                borderRadius={4}
+              />
             </Link>
             <Select
               flexShrink={0}
@@ -166,7 +190,24 @@ const Index = ({ schedule }) => {
             <Input
               placeholder="cari kecamatan / kelurahan"
               value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
+              onChange={(e) => {
+                setSearchKeyword(e.target.value);
+
+                setTimeout(() => {
+                  if (lokasiMap.length && lokasiMap[0]) {
+                    map.easeTo({
+                      center: {
+                        lat: parseFloat(lokasiMap[0].lat),
+                        lng: parseFloat(lokasiMap[0].lon),
+                      },
+                      padding: { bottom: 340 },
+                    });
+                    setActiveLoc(lokasiMap[0]);
+                  } else {
+                    setActiveLoc(null);
+                  }
+                }, 100);
+              }}
               fontSize={[14, 16]}
             />
           </HStack>
@@ -176,4 +217,4 @@ const Index = ({ schedule }) => {
   );
 };
 
-export default Index;
+export default MapPage;
