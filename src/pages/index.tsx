@@ -1,30 +1,23 @@
+import React from "react";
 import {
   Link as ChakraLink,
-  Badge,
   Text,
   Heading,
-  Wrap,
   Stack,
   Select,
   Input,
-  useDisclosure,
   Button,
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
-  PopoverArrow,
-  Link,
   PopoverCloseButton,
   Flex,
-  Link,
   SimpleGrid,
 } from "@chakra-ui/react";
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { getSchedule } from "../data/getSchedule";
-import { ExternalLinkIcon } from '@chakra-ui/icons'
-import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export async function getStaticProps({ params }) {
@@ -63,11 +56,11 @@ const VaxLocation = (location) => {
       minHeight={["10em"]}
     >
       <Stack padding={1} w="100%">
-        <Link href={mapsUrl} isExternal>
+        <ChakraLink href={mapsUrl} isExternal>
           <Heading size="sm">
             {namaLokasi} <ExternalLinkIcon mx="2px"/>
           </Heading>
-        </Link>
+        </ChakraLink>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
@@ -116,7 +109,7 @@ const Index = ({ schedule }) => {
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
-      <Link href="/map">
+      <ChakraLink href="/map">
         <Button
           position="absolute"
           right={20}
@@ -126,7 +119,7 @@ const Index = ({ schedule }) => {
         >
           Peta
         </Button>
-      </Link>
+      </ChakraLink>
       <Stack paddingInline={[4, 6]} width="100%">
         <Heading paddingBlockStart="8">
           Lokasi dan Jadwal Vaksinasi DKI Jakarta
