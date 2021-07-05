@@ -1,38 +1,40 @@
-import React from "react";
+import React from 'react';
+
+import { Container } from '../components/Container';
+import { DarkModeSwitch } from '../components/DarkModeSwitch';
+import { getSchedule } from '../data/getSchedule';
+
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Link as ChakraLink,
-  Text,
-  Heading,
-  Stack,
-  Select,
-  Input,
   Button,
+  Flex,
+  Heading,
+  Input,
+  Link,
   Popover,
-  PopoverTrigger,
-  PopoverContent,
   PopoverBody,
   PopoverCloseButton,
-  Flex,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
   SimpleGrid,
-} from "@chakra-ui/react";
-import { Container } from "../components/Container";
-import { DarkModeSwitch } from "../components/DarkModeSwitch";
-import { getSchedule } from "../data/getSchedule";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 
 export async function getStaticProps({ params }) {
   const schedule = await getSchedule();
   return {
     props: {
-      schedule,
+      schedule
     },
-    revalidate: 60,
+    revalidate: 60
   };
 }
 
-const VaxLocationDetail = (location) => {};
+const ignoredVaxLocationDetail = _location => {};
 
-const VaxLocation = (location) => {
+const VaxLocation = location => {
   const {
     nama_lokasi_vaksinasi: namaLokasi,
     alamat_lokasi_vaksinasi: alamatLokasi,
@@ -50,22 +52,18 @@ const VaxLocation = (location) => {
     : `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
 
   return (
-    <Container
-      border={"1px solid black"}
-      alignItems="start"
-      minHeight={["10em"]}
-    >
+    <Container alignItems="start" border="1px solid black" minHeight={['10em']}>
       <Stack padding={1} w="100%">
-        <ChakraLink href={mapsUrl} isExternal>
+        <Link href={mapsUrl} isExternal>
           <Heading size="sm">
             {namaLokasi} <ExternalLinkIcon mx="2px"/>
           </Heading>
-        </ChakraLink>
+        </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
         <Text>{wilayah}</Text>
-        <Stack direction="row" wrap="wrap" gridRowGap={2} paddingBlockEnd={2}>
+        <Stack direction="row" gridRowGap={2} paddingBlockEnd={2} wrap="wrap">
           {jadwal.map(({ id, waktu }) => {
             return (
               <Popover key={id}>
@@ -92,65 +90,53 @@ const VaxLocation = (location) => {
 };
 
 const Index = ({ schedule }) => {
-  const [searchBy, setSearchBy] = React.useState("kecamatan");
-  const [searchKeyword, setSearchKeyword] = React.useState("");
+  const [searchBy, setSearchBy] = React.useState('kecamatan');
+  const [searchKeyword, setSearchKeyword] = React.useState('');
 
   const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
     if (!searchKeyword.length) {
       return schedule;
     }
-    return schedule.filter((props) => {
-      return props[searchBy]
-        .toLowerCase()
-        .includes(searchKeyword.toLowerCase());
+    return schedule.filter(props => {
+      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
     });
   };
 
   return (
     <Container minHeight="100vh" overflowX="hidden">
       <DarkModeSwitch />
-      <ChakraLink href="/map">
-        <Button
-          position="absolute"
-          right={20}
-          top={2}
-          leftIcon={<ExternalLinkIcon />}
-          variant="solid"
-        >
+      <Link href="/map">
+        <Button leftIcon={<ExternalLinkIcon />} position="absolute" right={20} top={2} variant="solid">
           Peta
         </Button>
-      </ChakraLink>
+      </Link>
       <Stack paddingInline={[4, 6]} width="100%">
-        <Heading paddingBlockStart="8">
-          Lokasi dan Jadwal Vaksinasi DKI Jakarta
-        </Heading>
+        <Heading paddingBlockStart="8">Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
         <Flex direction="row">
           <Select
             flexShrink={0}
-            value={searchBy}
             marginRight={1}
-            width="auto"
-            onChange={(e) => {
+            onChange={e => {
               setSearchBy(e.target.value);
             }}
+            value={searchBy}
+            width="auto"
           >
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
           </Select>
           <Input
+            onChange={e => setSearchKeyword(e.target.value)}
             placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-          ></Input>
+          />
         </Flex>
 
-        <SimpleGrid columns={[1,2,3]} spacing={2}>
-          {scheduleToRender({ schedule, searchBy, searchKeyword }).map(
-            (l, index) => {
-              return <VaxLocation key={index} {...l} />;
-            }
-          )}
+        <SimpleGrid columns={[1, 2, 3]} spacing={2}>
+          {scheduleToRender({ schedule, searchBy, searchKeyword }).map((l, index) => {
+            return <VaxLocation key={index} {...l} />;
+          })}
         </SimpleGrid>
       </Stack>
     </Container>

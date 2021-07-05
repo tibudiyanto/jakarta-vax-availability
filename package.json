@@ -5,7 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next",
-    "lint": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
     "start": "next start",
     "type-check": "tsc --noEmit",
     "validate": "yarn lint && yarn type-check"
@@ -24,15 +25,15 @@
     "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
-    "eslint": "^7",
+    "eslint": "^7.30.0",
     "eslint-config-kentcdodds": "^19",
-    "eslint-config-next": "^11",
-    "eslint-config-prettier": "^8",
-    "eslint-plugin-jsx-a11y": "^6",
-    "eslint-plugin-prettier": "^3",
-    "eslint-plugin-react": "^7",
-    "eslint-plugin-simple-import-sort": "^7",
-    "prettier": "^2",
+    "eslint-config-next": "^11.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "prettier": "^2.3.2",
     "typescript": "^4.3.5"
   },
   "license": "MIT"
