@@ -9,7 +9,8 @@
     "lint:fix": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
     "start": "next start",
     "type-check": "tsc --noEmit",
-    "validate": "yarn lint && yarn type-check"
+    "validate": "yarn lint && yarn type-check",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.0",
@@ -26,6 +27,9 @@
     "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
+    "@types/mapbox-gl": "^2.3.1",
+    "@types/react": "^17.0.13",
+    "@types/react-dom": "^17.0.8",
     "eslint": "^7.30.0",
     "eslint-config-kentcdodds": "^19",
     "eslint-config-next": "^11.0.1",
@@ -34,8 +38,19 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^7.0.0",
+    "lint-staged": "^11.0.0",
     "prettier": "^2.3.2",
     "typescript": "^4.3.5"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,md,html}": [
+      "prettier --write"
+    ]
+  }
 }

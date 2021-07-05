@@ -1,25 +1,29 @@
+import * as React from 'react';
+
+import Footer from '../components/Footer';
+import ToggleColorMode from '../components/ToggleColorMode';
 import theme from '../theme';
 
-import { ChakraProvider, ColorModeProvider } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
+  // Hide footer in map page
+  const isNotMapPage = React.useMemo(() => router.asPath !== '/map', [router.asPath]);
+
   return (
     <>
       <Head>
         <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0" name="viewport" />
       </Head>
       <ChakraProvider resetCSS theme={theme}>
-        <ColorModeProvider
-          options={{
-            useSystemColorMode: true
-          }}
-        >
-          <Component {...pageProps} />
-        </ColorModeProvider>
+        <ToggleColorMode />
+        <Component {...pageProps} />
+        {isNotMapPage && <Footer />}
       </ChakraProvider>
     </>
   );
 }
-
-export default MyApp;

@@ -11,13 +11,14 @@
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
+    "noImplicitAny": false,
     "paths": {
       "~*": ["./src/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": false,
+    "strictNullChecks": false,
     "target": "es5"
   },
   "exclude": ["node_modules"],
