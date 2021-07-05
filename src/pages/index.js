@@ -93,6 +93,7 @@ const Index = ({ schedule }) => {
             <option value="kelurahan">Kelurahan</option>
           </Select>
           <Input
+            placeholder="cari kecamatan / kelurahan"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           ></Input>
