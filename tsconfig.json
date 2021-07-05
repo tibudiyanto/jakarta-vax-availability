@@ -11,6 +11,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
+    "noImplicitAny": false,
     "paths": {
       "~*": ["./src/*"]
     },
@@ -18,7 +19,6 @@
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": false,
-    "noImplicitAny": false,
     "target": "es5"
   },
   "exclude": ["node_modules"],

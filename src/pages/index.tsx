@@ -1,39 +1,18 @@
-import React from 'react';
+import * as React from 'react';
 
-import { Container } from '../components/Container';
-import { DarkModeSwitch } from '../components/DarkModeSwitch';
+import VaxLocation from '../components/VaxLocation';
 import { getSchedule } from '../data/getSchedule';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Link,
-  Popover,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverTrigger,
-  Select,
-  SimpleGrid,
-  Stack,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  useColorMode
-} from '@chakra-ui/react';
+import { Button, Heading, Input, Select, Stack, Wrap, WrapItem } from '@chakra-ui/react';
+import Head from 'next/head';
+import Link from 'next/link';
 
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps() {
   const schedule = await getSchedule();
+  console.log(schedule);
   return {
     props: {
       schedule
@@ -42,87 +21,7 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const ignoredVaxLocationDetail = _location => {};
-
-const VaxLocation = props => {
-  const {
-    loading,
-    nama_lokasi_vaksinasi: namaLokasi,
-    alamat_lokasi_vaksinasi: alamatLokasi,
-    wilayah,
-    kecamatan,
-    kelurahan,
-    rt,
-    rw,
-    jadwal,
-    detail_lokasi,
-    isUserLocationExist
-  } = props;
-
-  const { colorMode } = useColorMode();
-
-  const distanceBg = { light: 'gray.200', dark: 'gray.800' };
-
-  return (
-    <Container border={'1px solid black'} alignItems="start" minHeight={['10em']}>
-      {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
-        <Box bg={distanceBg[colorMode]} w="100%" p={2}>
-          <Text align="center">JARAK DARI LOKASI ANDA : {detail_lokasi[0].distance} KM</Text>
-        </Box>
-      ) : (
-        ''
-      )}
-      <Stack padding={1} w="100%">
-        <Text>{namaLokasi}</Text>
-        <Text>
-          KEC/KEL: {kecamatan} / {kelurahan}
-        </Text>
-        <Text>{wilayah}</Text>
-        <Stack direction="row" gridRowGap={2} paddingBlockEnd={2} wrap="wrap">
-          {jadwal.map(({ id, waktu }) => {
-            return (
-              <Popover key={id}>
-                <PopoverTrigger>
-                  <Button>{id}</Button>
-                </PopoverTrigger>
-                <PopoverContent w={['95vw', '30vw']}>
-                  <PopoverCloseButton />
-                  <PopoverBody>
-                    <Table>
-                      <Thead>
-                        <Tr>
-                          <Th>Waktu</Th>
-                          <Th>Sisa Kuota</Th>
-                          <Th>Jaki Kuota</Th>
-                          <Th>Total Kuota</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {waktu.map(({ label, id, kuota }) => {
-                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
-                          return (
-                            <Tr key={id}>
-                              <Td>{label}</Td>
-                              <Td>{sisaKuota}</Td>
-                              <Td>{jakiKuota}</Td>
-                              <Td>{totalKuota}</Td>
-                            </Tr>
-                          );
-                        })}
-                      </Tbody>
-                    </Table>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            );
-          })}
-        </Stack>
-      </Stack>
-    </Container>
-  );
-};
-
-const Index = ({ schedule }) => {
+export default function HomePage({ schedule }) {
   const [searchBy, setSearchBy] = React.useState('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const [userLocation, setUserLocation] = React.useState({
@@ -133,6 +32,9 @@ const Index = ({ schedule }) => {
   });
 
   React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    document.querySelector('input')?.focus();
+
     if (window && window.navigator && window.navigator.permissions) {
       window.navigator.permissions.query({ name: 'geolocation' }).then(status => {
         if (status.state === 'granted') {
@@ -142,7 +44,7 @@ const Index = ({ schedule }) => {
     }
   }, []);
 
-  const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
+  const filteredSchedule = React.useMemo(() => {
     if (!searchKeyword.length && !userLocation.lat && !userLocation.lon) {
       return schedule;
     }
@@ -184,10 +86,10 @@ const Index = ({ schedule }) => {
         });
     }
 
-    return schedule.filter(props => {
-      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
+    return schedule.filter(s => {
+      return s[searchBy].toLowerCase().includes(searchKeyword.toLowerCase());
     });
-  };
+  }, [schedule, searchBy, searchKeyword, userLocation]);
 
   const getUserLocation = () => {
     setUserLocation(prev => ({ ...prev, loading: true }));
@@ -219,7 +121,7 @@ const Index = ({ schedule }) => {
   };
 
   const handleButtonClickUserLocation = () => {
-    if (!navigator || !navigator.geolocation) {
+    if (!navigator.geolocation) {
       console.error('Geolocation is not supported');
       setUserLocation(prev => ({
         ...prev,
@@ -232,60 +134,53 @@ const Index = ({ schedule }) => {
   };
 
   return (
-    <Container minHeight="100vh" overflowX="hidden">
-      <DarkModeSwitch />
-      <Link href="/map">
-        <Button leftIcon={<ExternalLinkIcon />} position="absolute" right={20} top={2} variant="solid">
-          Peta
-        </Button>
-      </Link>
-      <Stack paddingInline={[4, 6]} width="100%">
-        <Heading paddingBlockStart="8">Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
+    <>
+      <Head>
+        <title>Lokasi dan Jadwal Vaksinasi DKI Jakarta</title>
+      </Head>
 
-        <Flex direction="row">
+      <Stack align="center" p={[2, 4]} spacing={[2, 4]}>
+        <Heading textAlign="center">😷 Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
+
+        <Link href="/map" passHref>
+          <Button as="a" leftIcon={<ExternalLinkIcon />} variant="solid">
+            Peta
+          </Button>
+        </Link>
+
+        <Stack direction={['column', 'row']} maxW="4xl" pb={4} w="full">
           <Button
             flexShrink={0}
-            mr={2}
-            onClick={handleButtonClickUserLocation}
-            isLoading={userLocation.loading}
             isDisabled={Boolean(userLocation.lat && userLocation.lon)}
+            isLoading={userLocation.loading}
+            onClick={handleButtonClickUserLocation}
           >
             {userLocation.lat && userLocation.lon ? 'Lokasi Ditemukan' : 'Dapatkan Lokasi Anda'}
           </Button>
-          <Select
-            mr={2}
-            flexShrink={0}
-            value={searchBy}
-            width="auto"
-            onChange={e => {
-              setSearchBy(e.target.value);
-            }}
-          >
+          <Select maxW={['auto', '2xs']} onChange={e => setSearchBy(e.target.value)} value={searchBy}>
             <option value="kecamatan">Kecamatan</option>
             <option value="kelurahan">Kelurahan</option>
           </Select>
           <Input
+            flexGrow={1}
+            fontSize={[14, 16]}
             onChange={e => setSearchKeyword(e.target.value)}
-            placeholder="cari kecamatan / kelurahan"
-            value={searchKeyword}
+            placeholder="cari kecamatan/kelurahan"
           />
-        </Flex>
+        </Stack>
 
-        <SimpleGrid columns={[1, 2, 3]} spacing={2}>
-          {scheduleToRender({ schedule, searchBy, searchKeyword }).map((l, index) => {
-            return (
+        <Wrap justify="center" spacing={4}>
+          {filteredSchedule.map((location, i) => (
+            <WrapItem key={i} maxW={['full', 'md']} w="full">
               <VaxLocation
-                key={index}
                 loading={userLocation.loading}
                 isUserLocationExist={userLocation.lat && userLocation.lon}
-                {...l}
+                location={location}
               />
-            );
-          })}
-        </SimpleGrid>
+            </WrapItem>
+          ))}
+        </Wrap>
       </Stack>
-    </Container>
+    </>
   );
-};
-
-export default Index;
+}
