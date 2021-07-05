@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictNullChecks": false,
     "noImplicitAny": false,
     "target": "es5"
   },
