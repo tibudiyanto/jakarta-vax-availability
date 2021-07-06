@@ -31,7 +31,7 @@ import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 import { useGeolocation } from 'rooks';
-import { getMapBounds, LngLat } from 'utils/map';
+import { getMapBounds } from 'utils/map';
 
 function Container(props) {
   const { colorMode } = useColorMode();
