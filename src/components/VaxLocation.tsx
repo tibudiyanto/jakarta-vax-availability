@@ -22,7 +22,7 @@ import {
   Tooltip,
   Tr,
   useColorMode,
-  useColorModeValue as mode,
+  useColorModeValue,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
@@ -59,6 +59,9 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
   } = location;
 
   const { colorMode } = useColorMode();
+  const hasQuotaBorderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
+  const boxBgColor = useColorModeValue('gray.100', 'gray.600');
+  const boxBorderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
 
   const mapsUrl =
     detail_lokasi?.[0] == null
@@ -70,21 +73,14 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
 
   return (
     <Stack
-      borderColor={isCurrentLocationHasQuota ? mode('blackAlpha.200', 'whiteAlpha.200') : 'red'}
+      borderColor={isCurrentLocationHasQuota ? hasQuotaBorderColor : 'red'}
       borderRadius="md"
       borderWidth={1}
       h="full"
       w="full"
     >
       {!loading && isUserLocationExist && (detail_lokasi?.length ?? 0) > 0 ? (
-        <Box
-          bg={mode('gray.100', 'gray.600')}
-          borderBottomWidth={1}
-          borderColor={mode('blackAlpha.200', 'whiteAlpha.200')}
-          borderTopRadius="md"
-          p={2}
-          w="100%"
-        >
+        <Box bg={boxBgColor} borderBottomWidth={1} borderColor={boxBorderColor} borderTopRadius="md" p={2} w="100%">
           <Text align="center" textTransform="uppercase">
             Jarak dari lokasi anda: <b>{detail_lokasi?.[0]?.distance}</b> KM
           </Text>
