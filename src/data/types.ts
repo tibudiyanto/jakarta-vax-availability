@@ -52,4 +52,9 @@ export interface DetailLokasi {
   importance: number;
 }
 
+export interface Coordinate {
+  lat: number;
+  lng: number;
+}
+
 export type VaccinationDataFields = keyof VaccinationData;
