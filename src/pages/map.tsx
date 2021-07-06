@@ -211,7 +211,7 @@ const MapPage = ({ schedule }: Props) => {
                   }
                 }, 100);
               }}
-              placeholder={`cari ${searchBy}`}
+              placeholder={`Cari ${searchBy}`}
               value={searchKeyword}
             />
           </HStack>
