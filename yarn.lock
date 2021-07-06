@@ -2292,7 +2292,7 @@ escape-string-regexp@^4.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-eslint-config-kentcdodds@^19:
+eslint-config-kentcdodds@^19.0.0:
   version "19.0.0"
   resolved "https://registry.yarnpkg.com/eslint-config-kentcdodds/-/eslint-config-kentcdodds-19.0.0.tgz#4b429ce7198f6f3c80332cf50e4764de56d8b445"
   integrity sha512-4Pxl4e2m3CguKvgeXoMGW7b0BCY6IGr6ju6DKCPa802eG8U4SGY6AW198cNmIMutfTmmkmM82SRZByqTtoVZiw==
