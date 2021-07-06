@@ -125,7 +125,8 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                       </Thead>
                       <Tbody>
                         {waktu?.map(({ label, id, kuota }) => {
-                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
+                          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota || {};
                           return (
                             <Tr key={id}>
                               <Td>{label}</Td>
