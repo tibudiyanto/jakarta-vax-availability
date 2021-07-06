@@ -20,8 +20,15 @@ export default extendTheme(<ThemeOverride>{
 
   styles: {
     global: {
+      html: {
+        scrollBehavior: 'smooth'
+      },
       body: {
-        cursor: 'default'
+        cursor: 'default',
+
+        MozOsxFontSmoothing: 'grayscale',
+        WebkitFontSmoothing: 'antialiased',
+        textRendering: 'optimizeLegibility'
       }
     }
   }
