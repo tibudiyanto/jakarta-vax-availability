@@ -7,10 +7,10 @@
     "dev": "next",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
+    "prepare": "husky install",
     "start": "next start",
     "type-check": "tsc --noEmit",
-    "validate": "yarn lint && yarn type-check",
-    "prepare": "husky install"
+    "validate": "yarn lint && yarn type-check"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.13",
@@ -44,7 +44,6 @@
     "prettier": "^2.3.2",
     "typescript": "^4.3.5"
   },
-  "license": "MIT",
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --cache --fix",
@@ -53,5 +52,6 @@
     "*.{css,scss,md,html}": [
       "prettier --write"
     ]
-  }
+  },
+  "license": "MIT"
 }
