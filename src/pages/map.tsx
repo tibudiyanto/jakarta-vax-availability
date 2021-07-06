@@ -135,7 +135,7 @@ const MapPage = ({ schedule }: Props) => {
     lokasi: item
   }));
 
-  const setInitialMapBound = (mapBox: MapboxGl.Map) => {
+  const setInitialMapBound = () => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     if ('permissions' in navigator) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -173,7 +173,7 @@ const MapPage = ({ schedule }: Props) => {
         onDrag={() => setActiveLoc(undefined)}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
-          setInitialMapBound(loadedMap);
+          setInitialMapBound();
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
