@@ -2,12 +2,13 @@ import * as React from 'react';
 
 import { hasQuota } from '../helpers/QuotaHelpers';
 
-import { InfoOutlineIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon, InfoOutlineIcon } from '@chakra-ui/icons';
 import {
   Button,
   Grid,
   Heading,
   HStack,
+  Link,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -46,6 +47,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
   } = location;
 
   const { colorMode } = useColorMode();
+
+  const mapsUrl =
+    detail_lokasi[0] == null
+      ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
+      : `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`;
   const isCurrentLocationHasQuota = hasQuota(jadwal);
 
   const hasDistanceFromLocation = React.useMemo(
@@ -62,7 +68,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
       w="full"
     >
       <Stack h="full" p={4} w="full">
-        <Heading size="sm">{namaLokasi}</Heading>
+        <Link href={mapsUrl} isExternal>
+          <Heading size="sm">
+            {namaLokasi} <ExternalLinkIcon mx="2px" />
+          </Heading>
+        </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
