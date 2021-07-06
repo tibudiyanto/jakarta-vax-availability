@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Heading,
+  Link,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -26,6 +27,7 @@ import {
 } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export default function VaxLocation({ loading, location, isUserLocationExist }) {
   const {
@@ -42,6 +44,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
   } = location;
 
   const { colorMode } = useColorMode();
+  
+  const mapsUrl =
+    detail_lokasi[0] == null
+      ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
+      : `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`;
   const isCurrentLocationHasQuota = hasQuota(jadwal);
 
   return (
@@ -70,7 +77,9 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
       )}
 
       <Stack h="full" p={4} w="full">
-        <Heading size="sm">{namaLokasi}</Heading>
+        <Link href={mapsUrl} isExternal>
+          <Heading size="sm">{namaLokasi} <ExternalLinkIcon mx="2px"/></Heading>
+        </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
