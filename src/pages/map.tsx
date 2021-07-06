@@ -136,13 +136,14 @@ const MapPage = ({ schedule }: Props) => {
   }));
 
   const setInitialMapBound = () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     if ('permissions' in navigator) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
-        const permission = data.state === 'granted';
-        setGetGeoPermission(permission);
-      });
+      window.navigator.permissions
+        .query({ name: 'geolocation' })
+        .then(data => {
+          const permission = data.state === 'granted';
+          setGetGeoPermission(permission);
+        })
+        .catch(() => {});
     }
   };
 
@@ -157,7 +158,7 @@ const MapPage = ({ schedule }: Props) => {
 
         map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
       } else {
-        map.fitBounds(getMapBounds(coordinates as LngLat[]), { padding: 100 });
+        map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,7 +169,6 @@ const MapPage = ({ schedule }: Props) => {
   return (
     <Container minHeight="100vh">
       <Map
-        // center={jakartaLatLng}
         containerStyle={{
           height: '100vh',
           width: '100%'
