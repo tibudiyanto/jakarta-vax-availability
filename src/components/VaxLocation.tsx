@@ -147,7 +147,13 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
         <Grid gap={2} gridTemplateAreas={`"distance timestamp"`} templateColumns="1fr 3fr">
           {renderLocationDetail()}
           <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
-            <Text align="right" as="span" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'} gridArea="timestamp">
+            <Text
+              align="right"
+              as="span"
+              color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
+              fontStyle="italic"
+              gridArea="timestamp"
+            >
               Diperbarui{' '}
               <Text as="time" dateTime={new Date(lastUpdated).toISOString()}>
                 {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
