@@ -1,10 +1,13 @@
 import * as React from 'react';
 
+import type { VaccinationDataWithDistance } from '../components/VaxLocation';
 import VaxLocation from '../components/VaxLocation';
 import { getSchedule } from '../data/getSchedule';
+import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Button, Heading, Input, Select, Stack, Wrap, WrapItem } from '@chakra-ui/react';
+import { VaccinationData } from 'data/types';
 import Head from 'next/head';
 import Link from 'next/link';
 import { getDistanceFromLatLonInKm } from 'utils/location';
@@ -21,8 +24,11 @@ export async function getStaticProps() {
     revalidate: 60
   };
 }
+interface Props {
+  schedule: VaccinationData[];
+}
 
-export default function HomePage({ schedule }) {
+export default function HomePage({ schedule }: Props) {
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const [userLocation, setUserLocation] = React.useState({
     loading: false,
@@ -30,69 +36,6 @@ export default function HomePage({ schedule }) {
     lon: 0,
     error: ''
   });
-
-  React.useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    document.querySelector('input')?.focus();
-
-    if (window && window.navigator && window.navigator.permissions) {
-      window.navigator.permissions.query({ name: 'geolocation' }).then(status => {
-        if (status.state === 'granted') {
-          getUserLocation();
-        }
-      });
-    }
-  }, []);
-
-  const filteredSchedule = React.useMemo(() => {
-    if (!searchKeyword.length && !userLocation.lat && !userLocation.lon) {
-      return schedule;
-    }
-
-    const fuse = new Fuse(schedule, {
-      keys: ['nama_lokasi_vaksinasi', 'wilayah', 'kecamatan', 'kelurahan'],
-      threshold: 0.4
-    });
-
-    const results = fuse.search(searchKeyword);
-    const scheduleSearchResult = searchKeyword ? results.map(schedule => schedule.item) : schedule;
-
-    if (userLocation.lat && userLocation.lon) {
-      /**
-       * Add distance from current location to the vax location
-       * for each item in `detail_lokasi` and sort it by the nearest.
-       */
-      return scheduleSearchResult
-        .map(item => ({
-          ...item,
-          detail_lokasi:
-            item.detail_lokasi.length > 0
-              ? item.detail_lokasi
-                  .map(loc => ({
-                    ...loc,
-                    distance: getDistanceFromLatLonInKm(
-                      userLocation.lat,
-                      userLocation.lon,
-                      Number(loc.lat),
-                      Number(loc.lon)
-                    )
-                  }))
-                  .sort((a, b) => a.distance - b.distance)
-              : item.detail_lokasi
-        }))
-        .sort((a, b) => {
-          if (a.detail_lokasi[0] === undefined) {
-            return 1;
-          } else if (b.detail_lokasi[0] === undefined) {
-            return -1;
-          } else if (a.detail_lokasi[0].distance && b.detail_lokasi[0].distance) {
-            return a.detail_lokasi[0].distance < b.detail_lokasi[0].distance ? -1 : 1;
-          }
-        });
-    }
-
-    return scheduleSearchResult;
-  }, [schedule, searchKeyword, userLocation]);
 
   const getUserLocation = () => {
     setUserLocation(prev => ({ ...prev, loading: true }));
@@ -123,7 +66,89 @@ export default function HomePage({ schedule }) {
     );
   };
 
+  React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    document.querySelector('input')?.focus();
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (window.navigator.permissions) {
+      window.navigator.permissions
+        .query({ name: 'geolocation' })
+        .then(status => {
+          if (status.state === 'granted') {
+            getUserLocation();
+          }
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  const fuseOptions = {
+    keys: ['nama_lokasi_vaksinasi', 'wilayah', 'kecamatan', 'kelurahan'],
+    threshold: 0.4
+  };
+
+  const fuse = React.useMemo(() => {
+    return new Fuse(schedule, fuseOptions);
+  }, [schedule, fuseOptions]);
+
+  const results = React.useMemo(() => {
+    return fuse.search(searchKeyword);
+  }, [fuse, searchKeyword]);
+
+  const filteredSchedule = React.useMemo(() => {
+    if (!searchKeyword.length && !userLocation.lat && !userLocation.lon) {
+      return schedule;
+    }
+
+    const filteredSchedules = searchKeyword ? results.map(schedule => schedule.item) : schedule;
+
+    if (userLocation.lat && userLocation.lon) {
+      /**
+       * Add distance from current location to the vax location
+       * for each item in `detail_lokasi` and sort it by the nearest.
+       */
+      return (
+        filteredSchedules
+          .map(item => ({
+            ...item,
+            detail_lokasi:
+              (item.detail_lokasi?.length || 0) > 0
+                ? item.detail_lokasi
+                    ?.map(loc => ({
+                      ...loc,
+                      distance: getDistanceFromLatLonInKm(
+                        userLocation.lat,
+                        userLocation.lon,
+                        Number(loc?.lat),
+                        Number(loc?.lon)
+                      )
+                    }))
+                    .sort((a, b) => (a.distance > b.distance ? 1 : -1))
+                : item.detail_lokasi
+          }))
+          // @ts-expect-error `distance` is added to `detail_lokasi` in the previous .map() call
+          .sort((a: VaccinationDataWithDistance, b: VaccinationDataWithDistance) => {
+            if (!a.detail_lokasi?.[0]) {
+              return 1;
+            } else if (!b.detail_lokasi?.[0]) {
+              return -1;
+            } else if (a.detail_lokasi[0].distance && b.detail_lokasi[0].distance) {
+              return a.detail_lokasi[0].distance < b.detail_lokasi[0].distance ? -1 : 1;
+            }
+
+            return 0;
+          })
+      );
+    }
+
+    return filteredSchedules;
+    // Resorting to a typecast here for a quick workaround.
+    // TODO: Type this function better
+  }, [schedule, searchKeyword, userLocation]) as VaccinationDataWithDistance[];
+
   const handleButtonClickUserLocation = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!navigator.geolocation) {
       console.error('Geolocation is not supported');
       setUserLocation(prev => ({
@@ -164,15 +189,15 @@ export default function HomePage({ schedule }) {
             flexGrow={1}
             fontSize={[14, 16]}
             onChange={e => setSearchKeyword(e.target.value)}
-            placeholder="cari nama lokasi vaksinasi/wilayah/kecamatan/kelurahan"
+            placeholder="cari kecamatan / kelurahan / nama lokasi vaksinasi"
           />
         </Stack>
 
         <Wrap justify="center" spacing={4}>
-          {filteredSchedule.map((location, i) => (
+          {filteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
             <WrapItem key={i} maxW={['full', 'md']} w="full">
               <VaxLocation
-                isUserLocationExist={userLocation.lat && userLocation.lon}
+                isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
                 loading={userLocation.loading}
                 location={location}
               />

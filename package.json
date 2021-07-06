@@ -13,7 +13,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^1.0.0",
+    "@chakra-ui/icons": "^1.0.13",
     "@chakra-ui/react": "^1.4.2",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
@@ -22,12 +22,13 @@
     "fuse.js": "^6.4.6",
     "isomorphic-unfetch": "^3.1.0",
     "mapbox-gl": "^2.3.1",
-    "next": "latest",
+    "next": "^11.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
+    "@chakra-ui/theme-tools": "^1.1.7",
     "@types/mapbox-gl": "^2.3.1",
     "@types/react": "^17.0.13",
     "@types/react-dom": "^17.0.8",
@@ -47,7 +48,6 @@
   "license": "MIT",
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --cache --fix",
       "prettier --write"
     ],
     "*.{css,scss,md,html}": [
