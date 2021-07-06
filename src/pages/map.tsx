@@ -106,8 +106,8 @@ const MapPage = ({ schedule }: Props) => {
   });
 
   const coordinates: CoordinateData[] = lokasiMap.map(item => ({
-    lat: parseFloat(item.lat || '0'),
-    lng: parseFloat(item.lon || '0'),
+    lat: parseFloat(item.lat ?? '0'),
+    lng: parseFloat(item.lon ?? '0'),
     lokasi: item
   }));
 
@@ -201,8 +201,8 @@ const MapPage = ({ schedule }: Props) => {
                   if (lokasiMap.length && lokasiMap[0] && map !== undefined) {
                     map.easeTo({
                       center: {
-                        lat: parseFloat(lokasiMap[0].lat || ''),
-                        lng: parseFloat(lokasiMap[0].lon || '')
+                        lat: parseFloat(lokasiMap[0].lat ?? ''),
+                        lng: parseFloat(lokasiMap[0].lon ?? '')
                       }
                     });
                     setActiveLoc(lokasiMap[0]);
