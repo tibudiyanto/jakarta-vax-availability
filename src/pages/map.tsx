@@ -4,11 +4,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React from 'react';
 
 import { getSchedule } from '../data/getSchedule';
+import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Box, Flex, HStack, IconButton, Input, Select, useColorMode } from '@chakra-ui/react';
-import VaxLocation from 'components/VaxLocation';
+import VaxLocation, { VaccinationDataWithDistance } from 'components/VaxLocation';
+import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
 import MapboxGl from 'mapbox-gl';
+import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
@@ -34,14 +37,13 @@ const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY
 });
 
-export async function getStaticProps({ params: _ }) {
-  const schedule = await getSchedule();
-  return {
-    props: {
-      schedule
-    },
-    revalidate: 60
-  };
+interface LocationData extends Partial<DetailLokasi> {
+  jadwal?: Jadwal[] | null;
+  parent: VaccinationDataWithDistance;
+}
+
+interface CoordinateData extends Partial<Coordinate> {
+  lokasi: LocationData;
 }
 
 const Mark = () => (
@@ -56,34 +58,56 @@ const Mark = () => (
   />
 );
 
-const MapPage = ({ schedule }) => {
-  const [map, setMap] = React.useState<MapboxGl.Map | null>(null);
-  const [activeLoc, setActiveLoc] = React.useState<any>(null);
-  const [searchBy, setSearchBy] = React.useState('kecamatan');
+export async function getStaticProps({ params: _ }: GetStaticPropsContext) {
+  const schedule = await getSchedule();
+  return {
+    props: {
+      schedule
+    },
+    revalidate: 60
+  };
+}
+
+interface Props {
+  schedule: VaccinationData[];
+}
+
+const MapPage = ({ schedule }: Props) => {
+  const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
+  const [searchBy, setSearchBy] = React.useState<SearchFilter>('kecamatan');
+  const [activeLoc, setActiveLoc] = React.useState<LocationData | undefined>(undefined);
   const [searchKeyword, setSearchKeyword] = React.useState('');
 
-  const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
+  const scheduleToRender = () => {
     if (!searchKeyword.length) {
       return schedule;
     }
+
     const result = schedule.filter(props => {
-      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase()) && props.detail_lokasi.length;
+      const fieldValue = props[searchBy].toLowerCase();
+
+      return (
+        fieldValue.includes(searchKeyword.toLowerCase()) && props.detail_lokasi != null && props.detail_lokasi.length
+      );
     });
 
     return result;
   };
 
-  const lokasiMap: any[] = [];
+  const lokasiMap: LocationData[] = [];
 
-  scheduleToRender({ schedule, searchBy, searchKeyword }).forEach(l => {
-    l.detail_lokasi.forEach(lokasi => {
-      lokasiMap.push({ ...lokasi, jadwal: l.jadwal, parent: l });
-    });
+  scheduleToRender().forEach(l => {
+    if (l.detail_lokasi != null) {
+      l.detail_lokasi.forEach(lokasi => {
+        //@ts-expect-error convert data with distance
+        lokasiMap.push({ ...lokasi, jadwal: l.jadwal, parent: l });
+      });
+    }
   });
 
-  const coordinates = lokasiMap.map(item => ({
-    lat: parseFloat(item.lat),
-    lng: parseFloat(item.lon),
+  const coordinates: CoordinateData[] = lokasiMap.map(item => ({
+    lat: parseFloat(item.lat || '0'),
+    lng: parseFloat(item.lon || '0'),
     lokasi: item
   }));
 
@@ -94,7 +118,7 @@ const MapPage = ({ schedule }) => {
           height: '100vh',
           width: '100%'
         }}
-        onDrag={e => setActiveLoc(null)}
+        onDrag={() => setActiveLoc(undefined)}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
           loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
@@ -104,13 +128,14 @@ const MapPage = ({ schedule }) => {
         <>
           {coordinates.map((coordinate, i) => {
             return (
-              //@ts-expect-error
+              //@ts-expect-error - coordinate type conflict
               <Marker key={i} coordinates={coordinate}>
                 <Box
                   onClick={() => {
                     setActiveLoc(coordinate.lokasi);
-                    if (map) {
+                    if (map != null) {
                       map.easeTo({
+                        //@ts-expect-error latlng conflict
                         center: {
                           lat: coordinate.lokasi.lat,
                           lng: coordinate.lokasi.lon
@@ -124,16 +149,16 @@ const MapPage = ({ schedule }) => {
               </Marker>
             );
           })}
-          {activeLoc && (
+          {activeLoc != undefined && (
             <Popup
               key={activeLoc.osm_id}
               anchor="bottom"
-              //@ts-expect-error
+              //@ts-expect-error latlng conflict
               coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
               style={{ marginTop: -20, padding: 0 }}
             >
               <Box bg="black">
-                <VaxLocation location={activeLoc.parent} />
+                <VaxLocation isUserLocationExist={false} loading={false} location={activeLoc.parent} />
               </Box>
             </Popup>
           )}
@@ -150,13 +175,22 @@ const MapPage = ({ schedule }) => {
               fontSize={[14, 16]}
               marginRight={1}
               onChange={e => {
-                setSearchBy(e.target.value);
+                setSearchBy(e.target.value as SearchFilter);
               }}
               value={searchBy}
               width="auto"
             >
-              <option value="kecamatan">Kecamatan</option>
-              <option value="kelurahan">Kelurahan</option>
+              {VALID_SEARCH_FILTERS.map(v => (
+                <option
+                  key={v}
+                  style={{
+                    textTransform: 'capitalize'
+                  }}
+                  value={v}
+                >
+                  {v}
+                </option>
+              ))}
             </Select>
             <Input
               fontSize={[14, 16]}
@@ -164,21 +198,20 @@ const MapPage = ({ schedule }) => {
                 setSearchKeyword(e.target.value);
 
                 setTimeout(() => {
-                  if (lokasiMap.length && lokasiMap[0]) {
-                    map &&
-                      map.easeTo({
-                        center: {
-                          lat: parseFloat(lokasiMap[0].lat),
-                          lng: parseFloat(lokasiMap[0].lon)
-                        }
-                      });
+                  if (lokasiMap.length && lokasiMap[0] && map !== undefined) {
+                    map.easeTo({
+                      center: {
+                        lat: parseFloat(lokasiMap[0].lat || ''),
+                        lng: parseFloat(lokasiMap[0].lon || '')
+                      }
+                    });
                     setActiveLoc(lokasiMap[0]);
                   } else {
-                    setActiveLoc(null);
+                    setActiveLoc(undefined);
                   }
                 }, 100);
               }}
-              placeholder="cari kecamatan / kelurahan"
+              placeholder={`cari ${searchBy}`}
               value={searchKeyword}
             />
           </HStack>

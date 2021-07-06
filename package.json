@@ -27,6 +27,7 @@
     "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
+    "@chakra-ui/theme-tools": "^1.1.7",
     "@types/mapbox-gl": "^2.3.1",
     "@types/react": "^17.0.13",
     "@types/react-dom": "^17.0.8",
