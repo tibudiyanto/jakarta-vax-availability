@@ -81,7 +81,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
     >
       {!loading && isUserLocationExist && (detail_lokasi?.length ?? 0) > 0 ? (
         <Box bg={boxBgColor} borderBottomWidth={1} borderColor={boxBorderColor} borderTopRadius="md" p={2} w="100%">
-          <Text align="center" textTransform="uppercase">
+          <Text align="center" textTransform="capitalize">
             Jarak dari lokasi anda: <b>{detail_lokasi?.[0]?.distance}</b> KM
           </Text>
         </Box>
@@ -91,14 +91,14 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
 
       <Stack h="full" p={4} w="full">
         <Link href={mapsUrl} isExternal>
-          <Heading size="sm">
-            {namaLokasi} <ExternalLinkIcon mx="2px" />
+          <Heading size="sm" textTransform="capitalize">
+            {namaLokasi.toLowerCase()} <ExternalLinkIcon mx="2px" />
           </Heading>
         </Link>
-        <Text>
-          KEC/KEL: {kecamatan} / {kelurahan}
+        <Text textTransform="capitalize">
+          Kec/Kel: {kecamatan.toLowerCase()} / {kelurahan.toLowerCase()}
         </Text>
-        <Text>{wilayah}</Text>
+        <Text textTransform="capitalize">{wilayah.toLowerCase()}</Text>
         {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
         <Spacer />
         <Wrap>
