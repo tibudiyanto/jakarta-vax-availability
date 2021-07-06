@@ -67,8 +67,8 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
     detail_lokasi?.[0] == null
       ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
       : `https://www.google.com/maps/search/${encodeURIComponent(
-        `${detail_lokasi[0]?.lat}, ${detail_lokasi[0]?.lon}`
-      )}`;
+          `${detail_lokasi[0]?.lat}, ${detail_lokasi[0]?.lon}`
+        )}`;
   const isCurrentLocationHasQuota = hasQuota(jadwal ?? []);
 
   return (
@@ -124,7 +124,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                       </Thead>
                       <Tbody>
                         {waktu?.map(({ label, id, kuota }) => {
-                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
+                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota || {};
                           return (
                             <Tr key={id}>
                               <Td>{label}</Td>
