@@ -1,18 +1,17 @@
 import * as React from 'react';
 
+import Searchbox from '../components/Searchbox';
 import type { VaccinationDataWithDistance } from '../components/VaxLocation';
 import VaxLocation from '../components/VaxLocation';
 import { getSchedule } from '../data/getSchedule';
-import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Button, Heading, Input, Select, Stack, Wrap, WrapItem } from '@chakra-ui/react';
+import { Button, Heading, Stack, Wrap, WrapItem } from '@chakra-ui/react';
 import { VaccinationData } from 'data/types';
+import useFuzzySearch from 'hooks/useFuzzySearch';
 import Head from 'next/head';
 import Link from 'next/link';
 import { getDistanceFromLatLonInKm } from 'utils/location';
-
-import Fuse from 'fuse.js';
 
 export async function getStaticProps() {
   const schedule = await getSchedule();
@@ -29,13 +28,14 @@ interface Props {
 }
 
 export default function HomePage({ schedule }: Props) {
-  const [searchKeyword, setSearchKeyword] = React.useState('');
   const [userLocation, setUserLocation] = React.useState({
     loading: false,
     lat: 0,
     lon: 0,
     error: ''
   });
+  const [searchKeyword, setSearchKeyword] = React.useState('');
+  const filtered = useFuzzySearch(schedule, searchKeyword);
 
   const getUserLocation = () => {
     setUserLocation(prev => ({ ...prev, loading: true }));
@@ -83,25 +83,12 @@ export default function HomePage({ schedule }: Props) {
     }
   }, []);
 
-  const fuseOptions = {
-    keys: ['nama_lokasi_vaksinasi', 'wilayah', 'kecamatan', 'kelurahan'],
-    threshold: 0.4
-  };
-
-  const fuse = React.useMemo(() => {
-    return new Fuse(schedule, fuseOptions);
-  }, [schedule, fuseOptions]);
-
-  const results = React.useMemo(() => {
-    return fuse.search(searchKeyword);
-  }, [fuse, searchKeyword]);
-
   const filteredSchedule = React.useMemo(() => {
     if (!searchKeyword.length && !userLocation.lat && !userLocation.lon) {
       return schedule;
     }
 
-    const filteredSchedules = searchKeyword ? results.map(schedule => schedule.item) : schedule;
+    const filteredSchedules = searchKeyword ? filtered.map(s => s.item) : schedule;
 
     if (userLocation.lat && userLocation.lon) {
       /**
@@ -145,7 +132,7 @@ export default function HomePage({ schedule }: Props) {
     return filteredSchedules;
     // Resorting to a typecast here for a quick workaround.
     // TODO: Type this function better
-  }, [schedule, searchKeyword, userLocation]) as VaccinationDataWithDistance[];
+  }, [schedule, searchKeyword, filtered, userLocation]) as VaccinationDataWithDistance[];
 
   const handleButtonClickUserLocation = () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -185,12 +172,7 @@ export default function HomePage({ schedule }: Props) {
           >
             {userLocation.lat && userLocation.lon ? 'Lokasi Ditemukan' : 'Dapatkan Lokasi Anda'}
           </Button>
-          <Input
-            flexGrow={1}
-            fontSize={[14, 16]}
-            onChange={e => setSearchKeyword(e.target.value)}
-            placeholder="cari kecamatan / kelurahan / nama lokasi vaksinasi"
-          />
+          <Searchbox keyword={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} />
         </Stack>
 
         <Wrap justify="center" spacing={4}>

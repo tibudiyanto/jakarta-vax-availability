@@ -4,12 +4,13 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React from 'react';
 
 import { getSchedule } from '../data/getSchedule';
-import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Flex, HStack, IconButton, Input, Select, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, HStack, IconButton, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import Searchbox from 'components/Searchbox';
 import VaxLocation, { VaccinationDataWithDistance } from 'components/VaxLocation';
 import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
+import useFuzzySearch from 'hooks/useFuzzySearch';
 import MapboxGl from 'mapbox-gl';
 import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
@@ -74,23 +75,21 @@ interface Props {
 
 const MapPage = ({ schedule }: Props) => {
   const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
-  const [searchBy, setSearchBy] = React.useState<SearchFilter>('kecamatan');
   const [activeLoc, setActiveLoc] = React.useState<LocationData | undefined>(undefined);
-  const [searchKeyword, setSearchKeyword] = React.useState('');
   const { colorMode: mode } = useColorMode();
   const mapFlyoutBackgroundColor = useColorModeValue('white', 'gray.900');
+  const [searchKeyword, setSearchKeyword] = React.useState('');
+  const filtered = useFuzzySearch(schedule, searchKeyword);
 
   const scheduleToRender = () => {
     if (!searchKeyword.length) {
       return schedule;
     }
 
-    const result = schedule.filter(props => {
-      const fieldValue = props[searchBy].toLowerCase();
+    const filteredSchedules = searchKeyword ? filtered.map(s => s.item) : schedule;
 
-      return (
-        fieldValue.includes(searchKeyword.toLowerCase()) && props.detail_lokasi != null && props.detail_lokasi.length
-      );
+    const result = filteredSchedules.filter(props => {
+      return props.detail_lokasi?.length;
     });
 
     return result;
@@ -178,30 +177,8 @@ const MapPage = ({ schedule }: Props) => {
             <Link href="/" passHref>
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
             </Link>
-            <Select
-              flexShrink={0}
-              fontSize={[14, 16]}
-              marginRight={1}
-              onChange={e => {
-                setSearchBy(e.target.value as SearchFilter);
-              }}
-              value={searchBy}
-              width="auto"
-            >
-              {VALID_SEARCH_FILTERS.map(v => (
-                <option
-                  key={v}
-                  style={{
-                    textTransform: 'capitalize'
-                  }}
-                  value={v}
-                >
-                  {v}
-                </option>
-              ))}
-            </Select>
-            <Input
-              fontSize={[14, 16]}
+            <Searchbox
+              keyword={searchKeyword}
               onChange={e => {
                 setSearchKeyword(e.target.value);
 
@@ -219,8 +196,6 @@ const MapPage = ({ schedule }: Props) => {
                   }
                 }, 100);
               }}
-              placeholder={`Cari ${searchBy}`}
-              value={searchKeyword}
             />
           </HStack>
         </Box>
