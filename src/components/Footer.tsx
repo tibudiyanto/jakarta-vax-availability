@@ -1,4 +1,4 @@
-import config from '../config';
+import config from '~config';
 
 import { Link, Stack, Text } from '@chakra-ui/react';
 

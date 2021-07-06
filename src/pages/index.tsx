@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import type { VaccinationDataWithDistance } from '../components/VaxLocation';
-import VaxLocation from '../components/VaxLocation';
-import { getSchedule } from '../data/getSchedule';
-import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
+import type { VaccinationDataWithDistance } from '~components/VaxLocation';
+import VaxLocation from '~components/VaxLocation';
+import { getSchedule } from '~data/getSchedule';
+import { SearchFilter, VALID_SEARCH_FILTERS } from '~types';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Button, Heading, Input, Select, Stack, Wrap, WrapItem } from '@chakra-ui/react';

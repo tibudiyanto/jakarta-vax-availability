@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { hasQuota } from '../helpers/QuotaHelpers';
+import { hasQuota } from '~helpers/QuotaHelpers';
 
 import { ExternalLinkIcon, InfoOutlineIcon } from '@chakra-ui/icons';
 import {

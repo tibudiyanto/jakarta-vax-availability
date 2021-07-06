@@ -1,10 +1,10 @@
-import '../styles/global.css';
+import '~styles/global.css';
 
 import * as React from 'react';
 
-import Footer from '../components/Footer';
-import ToggleColorMode from '../components/ToggleColorMode';
-import theme from '../theme';
+import Footer from '~components/Footer';
+import ToggleColorMode from '~components/ToggleColorMode';
+import theme from '~theme';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import type { AppProps } from 'next/app';
