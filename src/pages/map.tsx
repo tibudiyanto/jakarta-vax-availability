@@ -141,11 +141,7 @@ const MapPage = ({ schedule }: Props) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
         const permission = data.state === 'granted';
-        if (permission) {
-          setGetGeoPermission(permission);
-        } else {
-          mapBox.fitBounds(getMapBounds(coordinates as LngLat[]), { padding: 100 });
-        }
+        setGetGeoPermission(permission);
       });
     }
   };
@@ -155,9 +151,13 @@ const MapPage = ({ schedule }: Props) => {
       lat: Number(data.lat),
       lng: Number(data.lng)
     }));
-    if (map && geoObj?.lat && geoObj.lng) {
-      listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
-      map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
+    if (map) {
+      if (geoObj?.lat && geoObj.lng) {
+        listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
+        map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
+      } else {
+        map.fitBounds(getMapBounds(coordinates as LngLat[]), { padding: 100 });
+      }
     }
   }, [coordinates, geoObj?.lat, geoObj?.lng, map]);
 
