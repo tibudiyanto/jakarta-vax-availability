@@ -154,18 +154,21 @@ const MapPage = ({ schedule }: Props) => {
     if (map) {
       if (geoObj?.lat && geoObj.lng) {
         listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
+
         map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
       } else {
         map.fitBounds(getMapBounds(coordinates as LngLat[]), { padding: 100 });
       }
     }
-  }, [coordinates, geoObj?.lat, geoObj?.lng, map]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geoObj?.lat, geoObj?.lng]);
 
-  const jakartaLatLng = [106.836715, -6.163088] as [number, number];
+  const jakartaLatLng = { lat: -6.163088, lng: 106.836715 };
+
   return (
     <Container minHeight="100vh">
       <Map
-        center={jakartaLatLng}
+        // center={jakartaLatLng}
         containerStyle={{
           height: '100vh',
           width: '100%'
@@ -173,6 +176,7 @@ const MapPage = ({ schedule }: Props) => {
         onDrag={() => setActiveLoc(undefined)}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
+          loadedMap.setCenter(jakartaLatLng);
           setInitialMapBound();
         }}
         style="mapbox://styles/mapbox/streets-v8"
