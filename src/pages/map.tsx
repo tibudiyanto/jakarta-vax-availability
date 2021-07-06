@@ -138,11 +138,13 @@ const MapPage = ({ schedule }: Props) => {
   const setInitialMapBound = (mapBox: MapboxGl.Map) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     if ('permissions' in navigator) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       window.navigator.permissions.query({ name: 'geolocation' }).then(data => {
         const permission = data.state === 'granted';
-        setGetGeoPermission(permission);
-        if (!permission) {
-          mapBox.fitBounds(getMapBounds(coordinates), { padding: 100 });
+        if (permission) {
+          setGetGeoPermission(permission);
+        } else {
+          mapBox.fitBounds(getMapBounds(coordinates as LngLat[]), { padding: 100 });
         }
       });
     }
@@ -153,13 +155,11 @@ const MapPage = ({ schedule }: Props) => {
       lat: Number(data.lat),
       lng: Number(data.lng)
     }));
-    if (geoObj?.lat && geoObj.lng) {
+    if (map && geoObj?.lat && geoObj.lng) {
       listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
-    }
-    if (map) {
       map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
     }
-  }, [coordinates, geoObj, map]);
+  }, [coordinates, geoObj?.lat, geoObj?.lng, map]);
 
   const jakartaLatLng = [106.836715, -6.163088] as [number, number];
   return (
@@ -278,7 +278,6 @@ const MapPage = ({ schedule }: Props) => {
               fontSize={[14, 16]}
               onChange={e => {
                 setSearchKeyword(e.target.value);
-
                 setTimeout(() => {
                   if (lokasiMap.length && lokasiMap[0] && map !== undefined) {
                     map.easeTo({
