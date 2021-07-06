@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { Fragment } from 'react';
 
 import { getSchedule } from '../data/getSchedule';
+import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
@@ -24,7 +25,9 @@ import {
   Button,
   useColorMode
 } from '@chakra-ui/react';
+import { DetailLokasi, Jadwal, VaccinationData } from 'data/types';
 import MapboxGl from 'mapbox-gl';
+import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import { useGeolocation } from 'rooks';
@@ -52,7 +55,14 @@ const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY
 });
 
-const Mark = ({ lokasi }) => (
+interface LocationData extends Partial<DetailLokasi> {
+  jadwal?: Jadwal[] | null;
+}
+interface MarkProps {
+  lokasi: LocationData;
+}
+
+const Mark = ({ lokasi }: MarkProps) => (
   <Popover>
     <PopoverTrigger>
       <div
@@ -70,11 +80,11 @@ const Mark = ({ lokasi }) => (
       <PopoverCloseButton />
       <PopoverHeader>{lokasi.display_name}</PopoverHeader>
       <PopoverBody>
-        {lokasi.jadwal.map(({ id, waktu }) => {
+        {lokasi.jadwal?.map(({ id, waktu }) => {
           return (
             <Fragment key={id}>
               <Text fontWeight="extrabold">{id}</Text>
-              {waktu.map(({ label, id: _id }) => {
+              {waktu?.map(({ label, id: _id }) => {
                 return <Text key={_id}>{label}</Text>;
               })}
             </Fragment>
@@ -85,7 +95,7 @@ const Mark = ({ lokasi }) => (
   </Popover>
 );
 
-export async function getStaticProps({ params: _ }) {
+export async function getStaticProps({ params: _ }: GetStaticPropsContext) {
   const schedule = await getSchedule();
   return {
     props: {
@@ -95,25 +105,34 @@ export async function getStaticProps({ params: _ }) {
   };
 }
 
-const MapPage = ({ schedule }) => {
+
+interface Props {
+  schedule: VaccinationData[];
+}
+
+const MapPage = ({ schedule }: Props) => {
   const [isGetGeoPermission, setGetGeoPermission] = React.useState(false);
   const geoObj = useGeolocation({
     when: isGetGeoPermission
   });
 
   const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
-  const [searchBy, setSearchBy] = React.useState('kecamatan');
+  const [searchBy, setSearchBy] = React.useState<SearchFilter>('kecamatan');
   const [searchKeyword, setSearchKeyword] = React.useState('');
 
-  const scheduleToRender = ({ schedule, searchBy, searchKeyword }) => {
+  const scheduleToRender = () => {
     if (!searchKeyword.length) {
       return schedule;
     }
+
     const result = schedule.filter(props => {
-      return props[searchBy].toLowerCase().includes(searchKeyword.toLowerCase()) && props.detail_lokasi.length;
+      const fieldValue = props[searchBy].toLowerCase();
+
+      return fieldValue.includes(searchKeyword.toLowerCase()) && props.detail_lokasi?.length;
     });
 
-    const detail = result[0] && result[0].detail_lokasi;
+    const detail = result[0]?.detail_lokasi;
+
     if (detail?.[0] && map) {
       map.setCenter({
         lat: parseFloat(detail[0].lat),
@@ -124,17 +143,17 @@ const MapPage = ({ schedule }) => {
     return result;
   };
 
-  const lokasiMap: any[] = [];
+  const lokasiMap: LocationData[] = [];
 
-  scheduleToRender({ schedule, searchBy, searchKeyword }).forEach(l => {
-    l.detail_lokasi.forEach(lokasi => {
+  scheduleToRender().forEach(l => {
+    l.detail_lokasi?.forEach(lokasi => {
       lokasiMap.push({ ...lokasi, jadwal: l.jadwal });
     });
   });
 
   const coordinates = lokasiMap.map(item => ({
-    lat: parseFloat(item.lat),
-    lng: parseFloat(item.lon),
+    lat: parseFloat(item.lat ?? '0'),
+    lng: parseFloat(item.lon ?? '0'),
     lokasi: item
   }));
 
@@ -231,18 +250,27 @@ const MapPage = ({ schedule }) => {
               fontSize={[14, 16]}
               marginRight={1}
               onChange={e => {
-                setSearchBy(e.target.value);
+                setSearchBy(e.target.value as SearchFilter);
               }}
               value={searchBy}
               width="auto"
             >
-              <option value="kecamatan">Kecamatan</option>
-              <option value="kelurahan">Kelurahan</option>
+              {VALID_SEARCH_FILTERS.map(v => (
+                <option
+                  key={v}
+                  style={{
+                    textTransform: 'capitalize'
+                  }}
+                  value={v}
+                >
+                  {v}
+                </option>
+              ))}
             </Select>
             <Input
               fontSize={[14, 16]}
               onChange={e => setSearchKeyword(e.target.value)}
-              placeholder="cari kecamatan / kelurahan"
+              placeholder={`cari ${searchBy}`}
               value={searchKeyword}
             />
           </HStack>
