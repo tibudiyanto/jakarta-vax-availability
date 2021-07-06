@@ -105,7 +105,6 @@ export async function getStaticProps({ params: _ }: GetStaticPropsContext) {
   };
 }
 
-
 interface Props {
   schedule: VaccinationData[];
 }
@@ -185,16 +184,14 @@ const MapPage = ({ schedule }: Props) => {
   return (
     <Container minHeight="100vh">
       <Map
+        center={[-6.163088, 106.836715]}
         containerStyle={{
           height: '100vh',
           width: '100%'
         }}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
-          loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
-          setTimeout(() => {
-            setInitialMapBound(loadedMap);
-          }, 500);
+          setInitialMapBound(loadedMap);
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
