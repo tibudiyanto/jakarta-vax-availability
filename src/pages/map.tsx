@@ -3,10 +3,24 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import React from 'react';
 
-import { getSchedule } from '../data/getSchedule';
+import { getSchedule } from '~data/getSchedule';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Flex, HStack, IconButton, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  useColorMode,
+  useColorModeValue
+} from '@chakra-ui/react';
 import Searchbox from 'components/Searchbox';
 import VaxLocation, { VaccinationDataWithDistance } from 'components/VaxLocation';
 import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
@@ -15,6 +29,8 @@ import MapboxGl from 'mapbox-gl';
 import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
+import { useGeolocation } from 'rooks';
+import { getMapBounds } from 'utils/map';
 
 function Container(props) {
   const { colorMode } = useColorMode();
@@ -74,6 +90,11 @@ interface Props {
 }
 
 const MapPage = ({ schedule }: Props) => {
+  const [isGetGeoPermission, setGetGeoPermission] = React.useState(false);
+  const geoObj = useGeolocation({
+    when: isGetGeoPermission
+  });
+
   const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
   const [activeLoc, setActiveLoc] = React.useState<LocationData | undefined>(undefined);
   const { colorMode: mode } = useColorMode();
@@ -112,6 +133,37 @@ const MapPage = ({ schedule }: Props) => {
     lokasi: item
   }));
 
+  const setInitialMapBound = () => {
+    if ('permissions' in navigator) {
+      window.navigator.permissions
+        .query({ name: 'geolocation' })
+        .then(data => {
+          const permission = data.state === 'granted';
+          setGetGeoPermission(permission);
+        })
+        .catch(() => {});
+    }
+  };
+
+  React.useEffect(() => {
+    const listOfCoordinate = coordinates.map(data => ({
+      lat: Number(data.lat),
+      lng: Number(data.lng)
+    }));
+    if (map) {
+      if (geoObj?.lat && geoObj.lng) {
+        listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
+
+        map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
+      } else {
+        map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geoObj?.lat, geoObj?.lng]);
+
+  const jakartaLatLng = { lat: -6.163088, lng: 106.836715 };
+
   return (
     <Container minHeight="100vh">
       <Map
@@ -122,7 +174,8 @@ const MapPage = ({ schedule }: Props) => {
         onDrag={() => setActiveLoc(undefined)}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
-          loadedMap.setCenter({ lat: -6.163088, lng: 106.836715 });
+          loadedMap.setCenter(jakartaLatLng);
+          setInitialMapBound();
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
@@ -150,6 +203,28 @@ const MapPage = ({ schedule }: Props) => {
               </Marker>
             );
           })}
+          {geoObj?.lat && geoObj.lng && (
+            <Marker coordinates={[geoObj.lng, geoObj.lat]}>
+              <Popover>
+                <PopoverTrigger>
+                  <Box
+                    bg="blue.300"
+                    borderColor="blue.400"
+                    borderRadius="50%"
+                    borderStyle="solid"
+                    borderWidth="4px"
+                    height="20px"
+                    width="20px"
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>{'Lokasi anda sekarang'}</PopoverHeader>
+                </PopoverContent>
+              </Popover>
+            </Marker>
+          )}
           {activeLoc != undefined && (
             <Popup
               key={activeLoc.osm_id}
@@ -177,6 +252,14 @@ const MapPage = ({ schedule }: Props) => {
             <Link href="/" passHref>
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
             </Link>
+            <Button
+              aria-label="Gunakan Lokasi Anda"
+              borderRadius={4}
+              label="Gunakan Lokasi Anda"
+              onClick={() => setGetGeoPermission(true)}
+            >
+              📍
+            </Button>
             <Searchbox
               keyword={searchKeyword}
               onChange={e => {

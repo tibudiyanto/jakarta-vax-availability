@@ -1,9 +1,10 @@
 import * as React from 'react';
 
+import type { VaccinationDataWithDistance } from '~components/VaxLocation';
+import VaxLocation from '~components/VaxLocation';
+import { getSchedule } from '~data/getSchedule';
+
 import Searchbox from '../components/Searchbox';
-import type { VaccinationDataWithDistance } from '../components/VaxLocation';
-import VaxLocation from '../components/VaxLocation';
-import { getSchedule } from '../data/getSchedule';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Button, Heading, Stack, Wrap, WrapItem } from '@chakra-ui/react';
@@ -15,7 +16,6 @@ import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps() {
   const schedule = await getSchedule();
-  console.log(schedule);
   return {
     props: {
       schedule
