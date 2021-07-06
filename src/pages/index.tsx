@@ -14,7 +14,6 @@ import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps() {
   const schedule = await getSchedule();
-  console.log(schedule);
   return {
     props: {
       schedule
