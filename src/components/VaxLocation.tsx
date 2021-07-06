@@ -44,7 +44,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
   } = location;
 
   const { colorMode } = useColorMode();
-  
+
   const mapsUrl =
     detail_lokasi[0] == null
       ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
@@ -69,7 +69,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
           w="100%"
         >
           <Text align="center">
-            JARAK DARI LOKASI ANDA: <b>{detail_lokasi[0].distance}</b> KM
+            Jarak dari lokasi anda: <b>{detail_lokasi[0].distance}</b> KM
           </Text>
         </Box>
       ) : (
@@ -78,12 +78,12 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
 
       <Stack h="full" p={4} w="full">
         <Link href={mapsUrl} isExternal>
-          <Heading size="sm">{namaLokasi} <ExternalLinkIcon mx="2px"/></Heading>
+          <Heading size="sm" textTransform="capitalize">{namaLokasi.toLowerCase()} <ExternalLinkIcon mx="2px" /></Heading>
         </Link>
-        <Text>
-          KEC/KEL: {kecamatan} / {kelurahan}
+        <Text textTransform="capitalize">
+          Kec/Kel: {kecamatan.toLowerCase()} / {kelurahan.toLowerCase()}
         </Text>
-        <Text>{wilayah}</Text>
+        <Text textTransform="capitalize">{wilayah.toLowerCase()}</Text>
         {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
         <Spacer />
         <Wrap>
