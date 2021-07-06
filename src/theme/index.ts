@@ -7,7 +7,7 @@ export default extendTheme(<ThemeOverride>{
   breakpoints,
 
   colors: {
-    black: '#16161D',
+    black: '#16161d',
     red: '#e74c3c',
     darkred: '#eaa29b'
   },
