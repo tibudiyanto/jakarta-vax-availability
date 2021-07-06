@@ -7,7 +7,7 @@ import { getSchedule } from '../data/getSchedule';
 import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Flex, HStack, IconButton, Input, Select, useColorMode } from '@chakra-ui/react';
+import { Box, Flex, HStack, IconButton, Input, Select, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import VaxLocation, { VaccinationDataWithDistance } from 'components/VaxLocation';
 import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
 import MapboxGl from 'mapbox-gl';
@@ -77,7 +77,7 @@ const MapPage = ({ schedule }: Props) => {
   const [searchBy, setSearchBy] = React.useState<SearchFilter>('kecamatan');
   const [activeLoc, setActiveLoc] = React.useState<LocationData | undefined>(undefined);
   const [searchKeyword, setSearchKeyword] = React.useState('');
-  const { colorMode } = useColorMode();
+  const mapFlyoutBackgroundColor = useColorModeValue('white', 'gray.900');
 
   const scheduleToRender = () => {
     if (!searchKeyword.length) {
@@ -158,7 +158,7 @@ const MapPage = ({ schedule }: Props) => {
               coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
               style={{ marginTop: -20, padding: 0 }}
             >
-              <Box bg={colorMode === 'dark' ? 'black' : 'white'}>
+              <Box backgroundColor={mapFlyoutBackgroundColor}>
                 <VaxLocation isUserLocationExist={false} loading={false} location={activeLoc.parent} />
               </Box>
             </Popup>
@@ -166,7 +166,7 @@ const MapPage = ({ schedule }: Props) => {
         </>
       </Map>
       <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex={999999}>
-        <Box bg={colorMode === 'dark' ? 'black' : 'white'} borderRadius={10} margin={2} padding={2}>
+        <Box backgroundColor={mapFlyoutBackgroundColor} borderRadius={10} margin={2} padding={2}>
           <HStack spacing="8px">
             <Link href="/" passHref>
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
