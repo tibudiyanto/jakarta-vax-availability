@@ -1,5 +1,3 @@
-import '~styles/global.css';
-
 import * as React from 'react';
 
 import Footer from '~components/Footer';

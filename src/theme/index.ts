@@ -29,6 +29,15 @@ export default extendTheme(<ThemeOverride>{
         MozOsxFontSmoothing: 'grayscale',
         WebkitFontSmoothing: 'antialiased',
         textRendering: 'optimizeLegibility'
+      },
+
+      '.mapboxgl-popup-content': {
+        bg: 'transparent',
+        borderRadius: '6px',
+        p: 0
+      },
+      '.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip': {
+        borderTopColor: 'black'
       }
     }
   }
