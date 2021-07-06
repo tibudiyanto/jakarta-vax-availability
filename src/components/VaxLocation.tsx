@@ -66,7 +66,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
       : `https://www.google.com/maps/search/${encodeURIComponent(
           `${detail_lokasi[0]?.lat}, ${detail_lokasi[0]?.lon}`
         )}`;
-  const isCurrentLocationHasQuota = hasQuota(jadwal);
+  const isCurrentLocationHasQuota = hasQuota(jadwal ?? []);
 
   return (
     <Stack
@@ -85,8 +85,8 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
           p={2}
           w="100%"
         >
-          <Text align="center">
-            JARAK DARI LOKASI ANDA: <b>{detail_lokasi?.[0]?.distance}</b> KM
+          <Text align="center" textTransform="uppercase">
+            Jarak dari lokasi anda: <b>{detail_lokasi?.[0]?.distance}</b> KM
           </Text>
         </Box>
       ) : (
