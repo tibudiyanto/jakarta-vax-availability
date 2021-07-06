@@ -7,7 +7,6 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Button, Heading, Input, Select, Stack, Wrap, WrapItem } from '@chakra-ui/react';
 import Head from 'next/head';
 import Link from 'next/link';
-
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps() {
@@ -173,8 +172,8 @@ export default function HomePage({ schedule }) {
           {filteredSchedule.map((location, i) => (
             <WrapItem key={i} maxW={['full', 'md']} w="full">
               <VaxLocation
-                loading={userLocation.loading}
                 isUserLocationExist={userLocation.lat && userLocation.lon}
+                loading={userLocation.loading}
                 location={location}
               />
             </WrapItem>

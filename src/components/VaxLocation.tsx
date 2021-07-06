@@ -1,7 +1,10 @@
+import { hasQuota } from '../helpers/QuotaHelpers';
+
 import {
   Box,
   Button,
   Heading,
+  Link,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -15,12 +18,16 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
+  useColorMode,
   useColorModeValue as mode,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
-import { hasQuota } from '../helpers/QuotaHelpers';
+import { formatDistanceToNow } from 'date-fns';
+import idLocale from 'date-fns/locale/id';
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export default function VaxLocation({ loading, location, isUserLocationExist }) {
   const {
@@ -32,9 +39,16 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
     // rt,
     // rw,
     jadwal,
-    detail_lokasi
+    detail_lokasi,
+    last_updated_at: lastUpdated
   } = location;
 
+  const { colorMode } = useColorMode();
+  
+  const mapsUrl =
+    detail_lokasi[0] == null
+      ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
+      : `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`;
   const isCurrentLocationHasQuota = hasQuota(jadwal);
 
   return (
@@ -48,11 +62,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
       {!loading && isUserLocationExist && detail_lokasi.length > 0 ? (
         <Box
           bg={mode('gray.100', 'gray.600')}
-          w="100%"
-          p={2}
-          borderTopRadius="md"
           borderBottomWidth={1}
           borderColor={mode('blackAlpha.200', 'whiteAlpha.200')}
+          borderTopRadius="md"
+          p={2}
+          w="100%"
         >
           <Text align="center">
             JARAK DARI LOKASI ANDA: <b>{detail_lokasi[0].distance}</b> KM
@@ -62,8 +76,10 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
         ''
       )}
 
-      <Stack h="full" w="full" p={4}>
-        <Heading size="sm">{namaLokasi}</Heading>
+      <Stack h="full" p={4} w="full">
+        <Link href={mapsUrl} isExternal>
+          <Heading size="sm">{namaLokasi} <ExternalLinkIcon mx="2px"/></Heading>
+        </Link>
         <Text>
           KEC/KEL: {kecamatan} / {kelurahan}
         </Text>
@@ -111,6 +127,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
+        <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
+          <Text align="right" as="i" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
+            Diperbarui {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
+          </Text>
+        </Tooltip>
       </Stack>
     </Stack>
   );
