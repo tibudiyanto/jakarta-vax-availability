@@ -52,9 +52,9 @@ const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_KEY
 });
 
-type LocationData = Partial<DetailLokasi> & {
+interface LocationData extends Partial<DetailLokasi> {
   jadwal?: Jadwal[] | null;
-};
+}
 interface MarkProps {
   lokasi: LocationData;
 }

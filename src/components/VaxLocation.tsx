@@ -30,13 +30,13 @@ import { DetailLokasi, VaccinationData } from 'data/types';
 import { formatDistanceToNow } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
 
-type DetailLokasiWithDistance = DetailLokasi & {
+interface DetailLokasiWithDistance extends DetailLokasi {
   distance?: string | null;
-};
+}
 
-export type VaccinationDataWithDistance = Omit<VaccinationData, 'detail_lokasi'> & {
-  detail_lokasi?: (DetailLokasiWithDistance | null)[] | null;
-};
+export interface VaccinationDataWithDistance extends Omit<VaccinationData, 'detail_lokasi'> {
+  detail_lokasi?: DetailLokasiWithDistance[];
+}
 
 interface Props {
   loading: boolean;
