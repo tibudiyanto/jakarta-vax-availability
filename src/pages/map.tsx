@@ -181,10 +181,11 @@ const MapPage = ({ schedule }: Props) => {
     }
   }, [coordinates, geoObj, map]);
 
+  const jakartaLatLng = [106.836715, -6.163088];
   return (
     <Container minHeight="100vh">
       <Map
-        center={[-6.163088, 106.836715]}
+        center={jakartaLatLng}
         containerStyle={{
           height: '100vh',
           width: '100%'
