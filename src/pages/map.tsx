@@ -3,8 +3,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import React from 'react';
 
-import { getSchedule } from '../data/getSchedule';
-import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
+import { getSchedule } from '~data/getSchedule';
+import { SearchFilter, VALID_SEARCH_FILTERS } from '~types';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
