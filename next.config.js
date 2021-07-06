@@ -1,6 +1,6 @@
 module.exports = {
-  // TODO: remove eslint ignore until all sources are properly linted
+  // https://nextjs.org/docs/api-reference/next.config.js/ignoring-eslint
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: false
   }
 };
