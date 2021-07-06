@@ -209,14 +209,14 @@ const MapPage = ({ schedule }: Props) => {
             <Marker coordinates={[geoObj.lng, geoObj.lat]}>
               <Popover>
                 <PopoverTrigger>
-                  <div
-                    style={{
-                      backgroundColor: 'var(--chakra-colors-blue-300)',
-                      borderRadius: '50%',
-                      width: 20,
-                      height: 20,
-                      border: '4px solid var(--chakra-colors-blue-400)'
-                    }}
+                  <Box
+                    bg="blue.300"
+                    borderColor="blue.400"
+                    borderRadius="50%"
+                    borderStyle="solid"
+                    borderWidth="4px"
+                    height="20px"
+                    width="20px"
                   />
                 </PopoverTrigger>
                 <PopoverContent>
