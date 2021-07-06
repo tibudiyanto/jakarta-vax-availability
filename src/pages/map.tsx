@@ -171,6 +171,7 @@ const MapPage = ({ schedule }: Props) => {
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
             </Link>
             <Select
+              color="white"
               flexShrink={0}
               fontSize={[14, 16]}
               marginRight={1}
@@ -193,6 +194,7 @@ const MapPage = ({ schedule }: Props) => {
               ))}
             </Select>
             <Input
+              color="white"
               fontSize={[14, 16]}
               onChange={e => {
                 setSearchKeyword(e.target.value);
