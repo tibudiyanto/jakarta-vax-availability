@@ -25,14 +25,29 @@ import {
   Tooltip,
   Tr,
   useColorMode,
-  useColorModeValue as mode,
+  useColorModeValue,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
+import { DetailLokasi, VaccinationData } from 'data/types';
 import { formatDistanceToNow } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
 
-export default function VaxLocation({ loading, location, isUserLocationExist }) {
+interface DetailLokasiWithDistance extends DetailLokasi {
+  distance?: string | null;
+}
+
+export interface VaccinationDataWithDistance extends Omit<VaccinationData, 'detail_lokasi'> {
+  detail_lokasi?: DetailLokasiWithDistance[];
+}
+
+interface Props {
+  loading: boolean;
+  isUserLocationExist: boolean;
+  location: VaccinationDataWithDistance;
+}
+
+export default function VaxLocation({ loading, location, isUserLocationExist }: Props) {
   const {
     nama_lokasi_vaksinasi: namaLokasi,
     // alamat_lokasi_vaksinasi: alamatLokasi,
@@ -47,21 +62,29 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
   } = location;
 
   const { colorMode } = useColorMode();
+  const hasQuotaBorderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
 
-  const mapsUrl =
-    detail_lokasi[0] == null
-      ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
-      : `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`;
-  const isCurrentLocationHasQuota = hasQuota(jadwal);
+  const mapsUrl = detail_lokasi?.[0]
+    ? `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`
+    : `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`;
+  const isCurrentLocationHasQuota = hasQuota(jadwal ?? []);
 
-  const hasDistanceFromLocation = React.useMemo(
-    () => !loading && isUserLocationExist && detail_lokasi.length > 0,
-    [loading, isUserLocationExist, detail_lokasi]
-  );
+  const renderLocationDetail = () => {
+    if (!loading && isUserLocationExist && typeof detail_lokasi !== 'undefined' && detail_lokasi.length > 0) {
+      return (
+        <HStack gridArea="distance" spacing={2}>
+          <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
+          <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
+            <InfoOutlineIcon />
+          </Tooltip>
+        </HStack>
+      );
+    }
+  };
 
   return (
     <Stack
-      borderColor={isCurrentLocationHasQuota ? mode('blackAlpha.200', 'whiteAlpha.200') : 'red'}
+      borderColor={isCurrentLocationHasQuota ? hasQuotaBorderColor : 'red'}
       borderRadius="md"
       borderWidth={1}
       h="full"
@@ -80,7 +103,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
         {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
         <Spacer />
         <Wrap>
-          {jadwal.map(({ id: jadwalId, waktu }) => (
+          {jadwal?.map(({ id: jadwalId, waktu }) => (
             <WrapItem key={jadwalId}>
               <Popover isLazy>
                 <PopoverTrigger>
@@ -101,7 +124,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {waktu.map(({ label, id, kuota }) => {
+                        {waktu?.map(({ label, id, kuota }) => {
                           const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
                           return (
                             <Tr key={id}>
@@ -120,17 +143,10 @@ export default function VaxLocation({ loading, location, isUserLocationExist }) 
             </WrapItem>
           ))}
         </Wrap>
-        <Grid templateColumns="1fr 3fr" gridTemplateAreas={`"distance timestamp"`} gap={2}>
-          {hasDistanceFromLocation ? (
-            <HStack spacing={2} gridArea="distance">
-              <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
-              <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
-                <InfoOutlineIcon />
-              </Tooltip>
-            </HStack>
-          ) : null}
+        <Grid gap={2} gridTemplateAreas={`"distance timestamp"`} templateColumns="1fr 3fr">
+          {renderLocationDetail()}
           <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
-            <Text align="right" as="span" gridArea="timestamp" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
+            <Text align="right" as="span" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'} gridArea="timestamp">
               Diperbarui{' '}
               <Text as="time" dateTime={new Date(lastUpdated).toISOString()}>
                 {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
