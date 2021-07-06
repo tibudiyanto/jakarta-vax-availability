@@ -1,7 +1,7 @@
 import breakpoints from './breakpoints';
 import icons from './icons';
 
-import { extendTheme, theme as defaultTheme, ThemeOverride } from '@chakra-ui/react';
+import { extendTheme, ThemeOverride } from '@chakra-ui/react';
 
 export default extendTheme(<ThemeOverride>{
   breakpoints,
@@ -13,7 +13,7 @@ export default extendTheme(<ThemeOverride>{
   },
 
   fonts: {
-    mono: `'Menlo', ${defaultTheme.fonts.mono}`
+    //
   },
 
   icons,
