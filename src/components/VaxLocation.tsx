@@ -1,10 +1,13 @@
+import * as React from 'react';
+
 import { hasQuota } from '../helpers/QuotaHelpers';
 
-import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon, InfoOutlineIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
+  Grid,
   Heading,
+  HStack,
   Link,
   Popover,
   PopoverArrow,
@@ -60,16 +63,24 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
 
   const { colorMode } = useColorMode();
   const hasQuotaBorderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
-  const boxBgColor = useColorModeValue('gray.100', 'gray.600');
-  const boxBorderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
 
-  const mapsUrl =
-    detail_lokasi?.[0] == null
-      ? `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`
-      : `https://www.google.com/maps/search/${encodeURIComponent(
-        `${detail_lokasi[0]?.lat}, ${detail_lokasi[0]?.lon}`
-      )}`;
+  const mapsUrl = detail_lokasi?.[0]
+    ? `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`
+    : `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`;
   const isCurrentLocationHasQuota = hasQuota(jadwal ?? []);
+
+  const renderLocationDetail = () => {
+    if (!loading && isUserLocationExist && typeof detail_lokasi !== 'undefined' && detail_lokasi.length > 0) {
+      return (
+        <HStack gridArea="distance" spacing={2}>
+          <Text fontWeight="semibold">{detail_lokasi[0].distance} km</Text>
+          <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
+            <InfoOutlineIcon />
+          </Tooltip>
+        </HStack>
+      );
+    }
+  };
 
   return (
     <Stack
@@ -79,16 +90,6 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
       h="full"
       w="full"
     >
-      {!loading && isUserLocationExist && (detail_lokasi?.length ?? 0) > 0 ? (
-        <Box bg={boxBgColor} borderBottomWidth={1} borderColor={boxBorderColor} borderTopRadius="md" p={2} w="100%">
-          <Text align="center" textTransform="capitalize">
-            Jarak dari lokasi anda: <b>{detail_lokasi?.[0]?.distance}</b> KM
-          </Text>
-        </Box>
-      ) : (
-        ''
-      )}
-
       <Stack h="full" p={4} w="full">
         <Link href={mapsUrl} isExternal>
           <Heading size="sm" textTransform="capitalize">
@@ -124,7 +125,8 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                       </Thead>
                       <Tbody>
                         {waktu?.map(({ label, id, kuota }) => {
-                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota;
+                          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota || {};
                           return (
                             <Tr key={id}>
                               <Td>{label}</Td>
@@ -142,11 +144,23 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
             </WrapItem>
           ))}
         </Wrap>
-        <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
-          <Text align="right" as="i" color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>
-            Diperbarui {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
-          </Text>
-        </Tooltip>
+        <Grid gap={2} gridTemplateAreas={`"distance timestamp"`} templateColumns="1fr 3fr">
+          {renderLocationDetail()}
+          <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
+            <Text
+              align="right"
+              as="span"
+              color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
+              fontStyle="italic"
+              gridArea="timestamp"
+            >
+              Diperbarui{' '}
+              <Text as="time" dateTime={new Date(lastUpdated).toISOString()}>
+                {formatDistanceToNow(Date.parse(lastUpdated), { locale: idLocale, addSuffix: true })}
+              </Text>
+            </Text>
+          </Tooltip>
+        </Grid>
       </Stack>
     </Stack>
   );

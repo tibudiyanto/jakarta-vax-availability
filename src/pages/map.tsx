@@ -1,7 +1,7 @@
 /* eslint-disable react/style-prop-object */
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { getSchedule } from '../data/getSchedule';
 import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
@@ -9,27 +9,27 @@ import { SearchFilter, VALID_SEARCH_FILTERS } from '../types';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
   Input,
   Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
   PopoverTrigger,
+  PopoverArrow,
   Select,
-  Text,
-  Button,
-  useColorMode
+  useColorMode,
+  useColorModeValue,
+  PopoverContent,
+  PopoverCloseButton,
+  PopoverHeader
 } from '@chakra-ui/react';
-import { DetailLokasi, Jadwal, VaccinationData } from 'data/types';
+import VaxLocation, { VaccinationDataWithDistance } from 'components/VaxLocation';
+import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
 import MapboxGl from 'mapbox-gl';
 import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
-import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
+import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 import { useGeolocation } from 'rooks';
 import { getMapBounds, LngLat } from 'utils/map';
 
@@ -57,42 +57,23 @@ const Map = ReactMapboxGl({
 
 interface LocationData extends Partial<DetailLokasi> {
   jadwal?: Jadwal[] | null;
+  parent: VaccinationDataWithDistance;
 }
-interface MarkProps {
+
+interface CoordinateData extends Partial<Coordinate> {
   lokasi: LocationData;
 }
 
-const Mark = ({ lokasi }: MarkProps) => (
-  <Popover>
-    <PopoverTrigger>
-      <div
-        style={{
-          backgroundColor: '#e74c3c',
-          borderRadius: '50%',
-          width: 20,
-          height: 20,
-          border: '4px solid #eaa29b'
-        }}
-      />
-    </PopoverTrigger>
-    <PopoverContent>
-      <PopoverArrow />
-      <PopoverCloseButton />
-      <PopoverHeader>{lokasi.display_name}</PopoverHeader>
-      <PopoverBody>
-        {lokasi.jadwal?.map(({ id, waktu }) => {
-          return (
-            <Fragment key={id}>
-              <Text fontWeight="extrabold">{id}</Text>
-              {waktu?.map(({ label, id: _id }) => {
-                return <Text key={_id}>{label}</Text>;
-              })}
-            </Fragment>
-          );
-        })}
-      </PopoverBody>
-    </PopoverContent>
-  </Popover>
+const Mark = () => (
+  <Box
+    bg="red"
+    borderColor="darkred"
+    borderRadius="50%"
+    borderStyle="solid"
+    borderWidth="4px"
+    height="20px"
+    width="20px"
+  />
 );
 
 export async function getStaticProps({ params: _ }: GetStaticPropsContext) {
@@ -117,7 +98,9 @@ const MapPage = ({ schedule }: Props) => {
 
   const [map, setMap] = React.useState<MapboxGl.Map | undefined>(undefined);
   const [searchBy, setSearchBy] = React.useState<SearchFilter>('kecamatan');
+  const [activeLoc, setActiveLoc] = React.useState<LocationData | undefined>(undefined);
   const [searchKeyword, setSearchKeyword] = React.useState('');
+  const mapFlyoutBackgroundColor = useColorModeValue('white', 'gray.900');
 
   const scheduleToRender = () => {
     if (!searchKeyword.length) {
@@ -127,17 +110,10 @@ const MapPage = ({ schedule }: Props) => {
     const result = schedule.filter(props => {
       const fieldValue = props[searchBy].toLowerCase();
 
-      return fieldValue.includes(searchKeyword.toLowerCase()) && props.detail_lokasi?.length;
+      return (
+        fieldValue.includes(searchKeyword.toLowerCase()) && props.detail_lokasi != null && props.detail_lokasi.length
+      );
     });
-
-    const detail = result[0]?.detail_lokasi;
-
-    if (detail?.[0] && map) {
-      map.setCenter({
-        lat: parseFloat(detail[0].lat),
-        lng: parseFloat(detail[0].lon)
-      });
-    }
 
     return result;
   };
@@ -145,12 +121,15 @@ const MapPage = ({ schedule }: Props) => {
   const lokasiMap: LocationData[] = [];
 
   scheduleToRender().forEach(l => {
-    l.detail_lokasi?.forEach(lokasi => {
-      lokasiMap.push({ ...lokasi, jadwal: l.jadwal });
-    });
+    if (l.detail_lokasi != null) {
+      l.detail_lokasi.forEach(lokasi => {
+        //@ts-expect-error convert data with distance
+        lokasiMap.push({ ...lokasi, jadwal: l.jadwal, parent: l });
+      });
+    }
   });
 
-  const coordinates = lokasiMap.map(item => ({
+  const coordinates: CoordinateData[] = lokasiMap.map(item => ({
     lat: parseFloat(item.lat ?? '0'),
     lng: parseFloat(item.lon ?? '0'),
     lokasi: item
@@ -170,18 +149,19 @@ const MapPage = ({ schedule }: Props) => {
   };
 
   React.useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (map && geoObj && geoObj.lat && geoObj.lng) {
-      const listOfCoordinate = coordinates.map(data => ({
-        lat: data.lat,
-        lng: data.lng
-      }));
+    const listOfCoordinate = coordinates.map(data => ({
+      lat: Number(data.lat),
+      lng: Number(data.lng)
+    }));
+    if (geoObj?.lat && geoObj.lng) {
       listOfCoordinate.push({ lat: geoObj.lat, lng: geoObj.lng });
+    }
+    if (map) {
       map.fitBounds(getMapBounds(listOfCoordinate), { padding: 100 });
     }
   }, [coordinates, geoObj, map]);
 
-  const jakartaLatLng = [106.836715, -6.163088];
+  const jakartaLatLng = [106.836715, -6.163088] as [number, number];
   return (
     <Container minHeight="100vh">
       <Map
@@ -190,48 +170,77 @@ const MapPage = ({ schedule }: Props) => {
           height: '100vh',
           width: '100%'
         }}
+        onDrag={() => setActiveLoc(undefined)}
         onStyleLoad={loadedMap => {
           setMap(loadedMap);
           setInitialMapBound(loadedMap);
         }}
         style="mapbox://styles/mapbox/streets-v8"
       >
-        {coordinates.map((coordinate, i) => {
-          return (
-            // @ts-expect-error - `coordinate` is still untyped
-            <Marker key={i} coordinates={coordinate}>
-              <Mark key={i} lokasi={coordinate.lokasi} />
-            </Marker>
-          );
-        })}
-
-        {geoObj && geoObj.lat && (
-          <Marker coordinates={[geoObj.lng, geoObj.lat]}>
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  style={{
-                    backgroundColor: 'var(--chakra-colors-blue-300)',
-                    borderRadius: '50%',
-                    width: 20,
-                    height: 20,
-                    border: '4px solid var(--chakra-colors-blue-400)'
+        <>
+          {coordinates.map((coordinate, i) => {
+            return (
+              //@ts-expect-error - coordinate type conflict
+              <Marker key={i} coordinates={coordinate}>
+                <Box
+                  onClick={() => {
+                    setActiveLoc(coordinate.lokasi);
+                    if (map != null) {
+                      map.easeTo({
+                        //@ts-expect-error latlng conflict
+                        center: {
+                          lat: coordinate.lokasi.lat,
+                          lng: coordinate.lokasi.lon
+                        }
+                      });
+                    }
                   }}
-                />
-              </PopoverTrigger>
-              <PopoverContent>
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverHeader>{'Lokasi anda sekarang'}</PopoverHeader>
-              </PopoverContent>
-            </Popover>
-          </Marker>
-        )}
+                >
+                  <Mark key={i} />
+                </Box>
+              </Marker>
+            );
+          })}
+          {geoObj?.lat && geoObj.lng && (
+            <Marker coordinates={[geoObj.lng, geoObj.lat]}>
+              <Popover>
+                <PopoverTrigger>
+                  <div
+                    style={{
+                      backgroundColor: 'var(--chakra-colors-blue-300)',
+                      borderRadius: '50%',
+                      width: 20,
+                      height: 20,
+                      border: '4px solid var(--chakra-colors-blue-400)'
+                    }}
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>{'Lokasi anda sekarang'}</PopoverHeader>
+                </PopoverContent>
+              </Popover>
+            </Marker>
+          )}
+          {activeLoc != undefined && (
+            <Popup
+              key={activeLoc.osm_id}
+              anchor="bottom"
+              //@ts-expect-error latlng conflict
+              coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
+              style={{ marginTop: -20, padding: 0 }}
+            >
+              <Box backgroundColor={mapFlyoutBackgroundColor}>
+                <VaxLocation isUserLocationExist={false} loading={false} location={activeLoc.parent} />
+              </Box>
+            </Popup>
+          )}
+        </>
       </Map>
-      <Box height={80} left={0} maxWidth={450} position="fixed" top={0} width="100%" zIndex={999999999999}>
-        <Box bg="black" borderRadius={10} margin={2} padding={2}>
+      <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex={999999}>
+        <Box backgroundColor={mapFlyoutBackgroundColor} borderRadius={10} margin={2} padding={2}>
           <HStack spacing="8px">
-            ]
             <Link href="/" passHref>
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
             </Link>
@@ -267,8 +276,24 @@ const MapPage = ({ schedule }: Props) => {
             </Select>
             <Input
               fontSize={[14, 16]}
-              onChange={e => setSearchKeyword(e.target.value)}
-              placeholder={`cari ${searchBy}`}
+              onChange={e => {
+                setSearchKeyword(e.target.value);
+
+                setTimeout(() => {
+                  if (lokasiMap.length && lokasiMap[0] && map !== undefined) {
+                    map.easeTo({
+                      center: {
+                        lat: parseFloat(lokasiMap[0].lat ?? ''),
+                        lng: parseFloat(lokasiMap[0].lon ?? '')
+                      }
+                    });
+                    setActiveLoc(lokasiMap[0]);
+                  } else {
+                    setActiveLoc(undefined);
+                  }
+                }, 100);
+              }}
+              placeholder={`Cari ${searchBy}`}
               value={searchKeyword}
             />
           </HStack>
