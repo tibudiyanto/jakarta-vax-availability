@@ -77,6 +77,7 @@ const MapPage = ({ schedule }: Props) => {
   const [searchBy, setSearchBy] = React.useState<SearchFilter>('kecamatan');
   const [activeLoc, setActiveLoc] = React.useState<LocationData | undefined>(undefined);
   const [searchKeyword, setSearchKeyword] = React.useState('');
+  const { colorMode: mode } = useColorMode();
   const mapFlyoutBackgroundColor = useColorModeValue('white', 'gray.900');
 
   const scheduleToRender = () => {
@@ -165,8 +166,14 @@ const MapPage = ({ schedule }: Props) => {
           )}
         </>
       </Map>
-      <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex={999999}>
-        <Box backgroundColor={mapFlyoutBackgroundColor} borderRadius={10} margin={2} padding={2}>
+      <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex="sticky">
+        <Box
+          backgroundColor={mapFlyoutBackgroundColor}
+          borderRadius={10}
+          boxShadow={mode === 'dark' ? 'dark-lg' : 'lg'}
+          margin={2}
+          padding={2}
+        >
           <HStack spacing="8px">
             <Link href="/" passHref>
               <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
