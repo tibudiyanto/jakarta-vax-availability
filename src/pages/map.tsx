@@ -256,7 +256,17 @@ const MapPage = ({ schedule }: Props) => {
               aria-label="Gunakan Lokasi Anda"
               borderRadius={4}
               label="Gunakan Lokasi Anda"
-              onClick={() => setGetGeoPermission(true)}
+              onClick={() =>
+                isGetGeoPermission
+                  ? map?.easeTo({
+                      //@ts-expect-error latlng conflict
+                      center: {
+                        lat: geoObj?.lat,
+                        lng: geoObj?.lng
+                      }
+                    })
+                  : setGetGeoPermission(true)
+              }
             >
               📍
             </Button>
