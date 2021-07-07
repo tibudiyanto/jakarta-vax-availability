@@ -7,6 +7,7 @@ import { VaccinationDataWithDistance } from './types';
 
 import {
   Badge,
+  Box,
   Button,
   Flex,
   Heading,
@@ -67,7 +68,7 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
     if (isUserLocationExist && typeof detail_lokasi !== 'undefined' && detail_lokasi.length > 0) {
       return (
         <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
-          <Text fontSize="2xl" fontWeight="semibold">
+          <Text align="right" fontSize="2xl" fontWeight="semibold">
             {detail_lokasi[0].distance} km
           </Text>
         </Tooltip>
@@ -94,7 +95,13 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
           </Tooltip>
         </Stack>
         <Stack ml={4} spacing={2}>
-          {!isCurrentLocationHasQuota && <Badge colorScheme="red">Kuota Habis</Badge>}
+          {!isCurrentLocationHasQuota && (
+            <Box>
+              <Badge align="right" colorScheme="red">
+                Kuota Habis
+              </Badge>
+            </Box>
+          )}
           {renderLocationDistance()}
         </Stack>
       </Flex>
