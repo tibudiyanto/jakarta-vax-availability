@@ -29,7 +29,7 @@ import {
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
-import { DetailLokasi, VaccinationData } from 'data/types';
+import { DetailLokasi, Kuota, VaccinationData } from 'data/types';
 import { formatDistanceToNow } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
 
@@ -67,7 +67,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
   const mapsUrl = detail_lokasi?.[0]
     ? `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`
     : `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`;
-  const isCurrentLocationHasQuota = hasQuota(jadwal ?? []);
+  const isCurrentLocationHasQuota = hasQuota(jadwal);
 
   const renderLocationDetail = () => {
     if (!loading && isUserLocationExist && typeof detail_lokasi !== 'undefined' && detail_lokasi.length > 0) {
@@ -103,7 +103,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
         {!isCurrentLocationHasQuota && <Text color="red">Kuota Habis</Text>}
         <Spacer />
         <Wrap>
-          {jadwal?.map(({ id: jadwalId, waktu }) => (
+          {jadwal.map(({ id: jadwalId, waktu }) => (
             <WrapItem key={jadwalId}>
               <Popover isLazy>
                 <PopoverTrigger>
@@ -123,7 +123,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {waktu?.map(({ label, id, kuota }) => {
+                        {waktu.map(({ label, id, kuota }) => {
                           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                           const { sisaKuota = 0, totalKuota = 0 } = kuota || {};
                           return (

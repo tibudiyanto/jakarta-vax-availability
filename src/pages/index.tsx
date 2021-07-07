@@ -100,21 +100,21 @@ export default function HomePage({ schedule }: Props) {
           .map(item => ({
             ...item,
             detail_lokasi:
-              (item.detail_lokasi?.length || 0) > 0
+              (item.detail_lokasi.length || 0) > 0
                 ? item.detail_lokasi
-                    ?.map(loc => ({
+                    .map(loc => ({
                       ...loc,
                       distance: getDistanceFromLatLonInKm(
                         userLocation.lat,
                         userLocation.lon,
-                        Number(loc?.lat),
-                        Number(loc?.lon)
+                        Number(loc.lat),
+                        Number(loc.lon)
                       )
                     }))
                     .sort((a, b) => (a.distance > b.distance ? 1 : -1))
                 : item.detail_lokasi
           }))
-          // @ts-expect-error `distance` is added to `detail_lokasi` in the previous .map() call
+          // `distance` is added to `detail_lokasi` in the previous .map() call
           .sort((a: VaccinationDataWithDistance, b: VaccinationDataWithDistance) => {
             if (!a.detail_lokasi?.[0]) {
               return 1;

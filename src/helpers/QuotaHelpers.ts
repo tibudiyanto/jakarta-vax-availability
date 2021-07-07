@@ -1,4 +1,4 @@
-import { Jadwal } from 'data/types';
+import { Jadwal, KuotaRt } from 'data/types';
 
 export function hasQuota(jadwal: Jadwal[] = []) {
   for (const jadwalItem of jadwal) {
