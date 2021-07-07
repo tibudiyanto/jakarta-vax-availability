@@ -119,19 +119,17 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                         <Tr>
                           <Th>Waktu</Th>
                           <Th>Sisa Kuota</Th>
-                          <Th>Jaki Kuota</Th>
                           <Th>Total Kuota</Th>
                         </Tr>
                       </Thead>
                       <Tbody>
                         {waktu?.map(({ label, id, kuota }) => {
                           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                          const { sisaKuota = 0, jakiKuota = 0, totalKuota = 0 } = kuota || {};
+                          const { sisaKuota = 0, totalKuota = 0 } = kuota || {};
                           return (
                             <Tr key={id}>
                               <Td>{label}</Td>
                               <Td>{sisaKuota}</Td>
-                              <Td>{jakiKuota}</Td>
                               <Td>{totalKuota}</Td>
                             </Tr>
                           );
