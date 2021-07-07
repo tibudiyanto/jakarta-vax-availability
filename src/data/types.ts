@@ -1,56 +1,71 @@
-export interface VaccinationData {
-  kode_lokasi_vaksinasi: number;
-  nama_lokasi_vaksinasi: string;
-  alamat_lokasi_vaksinasi: string;
-  wilayah: string;
-  kecamatan: string;
-  kelurahan: string;
-  rt: string;
-  rw: string;
-  kodepos: string;
-  jenis_faskes: string;
-  jumlah_tim_vaksinator: number;
-  nama_faskes: string;
-  created_at?: null;
-  updated_at?: null;
-  pcare: boolean;
-  jadwal?: Jadwal[] | null;
-  detail_lokasi?: (DetailLokasi | null)[] | null;
-  last_updated_at: string;
-}
-export interface Jadwal {
-  id: string;
-  label: string;
-  kode_lokasi_vaksinasi: number;
-  waktu?: Waktu[] | null;
-}
+import * as rt from 'runtypes';
 
-export interface Waktu {
-  id: string;
-  label: string;
-  kuota: Kuota;
-}
+export const KuotaRt = rt.Record({
+  totalKuota: rt.Union(rt.Null, rt.Number),
+  sisaKuota: rt.Union(rt.Null, rt.Number),
+  jakiKuota: rt.Union(rt.Null, rt.Number)
+});
 
-export interface Kuota {
-  totalKuota?: number | null;
-  sisaKuota?: number | null;
-  jakiKuota?: number | null;
-}
+export const WaktuRt = rt.Record({
+  id: rt.String,
+  label: rt.String,
+  kuota: KuotaRt.Or(rt.Record({}))
+});
 
-export interface DetailLokasi {
-  place_id: number;
-  licence: string;
-  osm_type: string;
-  osm_id: number;
-  boundingbox?: string[] | null;
-  lat: string;
-  lon: string;
-  display_name: string;
-  place_rank: number;
-  category: string;
-  type: string;
-  importance: number;
-}
+export const JadwalRt = rt.Record({
+  id: rt.String,
+  label: rt.String,
+  kode_lokasi_vaksinasi: rt.Number,
+  waktu: rt.Array(WaktuRt)
+});
+
+export const DetailLokasiRt = rt.Record({
+  place_id: rt.Number,
+  licence: rt.String,
+  osm_type: rt.String,
+  osm_id: rt.Number,
+  boundingbox: rt.Array(rt.String),
+  lat: rt.String,
+  lon: rt.String,
+  display_name: rt.String,
+  place_rank: rt.Number,
+  category: rt.String,
+  type: rt.String,
+  importance: rt.Number
+});
+
+export const VacctinationRt = rt.Record({
+  kode_lokasi_vaksinasi: rt.Number,
+  nama_lokasi_vaksinasi: rt.String,
+  alamat_lokasi_vaksinasi: rt.String,
+  wilayah: rt.String,
+  kecamatan: rt.String,
+  kelurahan: rt.String,
+  rt: rt.String,
+  rw: rt.String,
+  kodepos: rt.String,
+  jenis_faskes: rt.String,
+  jumlah_tim_vaksinator: rt.Union(rt.Number, rt.Null),
+  nama_faskes: rt.String,
+  created_at: rt.Union(rt.Null, rt.String),
+  updated_at: rt.Union(rt.Null, rt.String),
+  pcare: rt.Boolean,
+  jadwal: rt.Array(JadwalRt),
+  detail_lokasi: rt.Array(DetailLokasiRt),
+  last_updated_at: rt.String
+});
+
+export const VaccinationDataRt = rt.Array(VacctinationRt);
+
+export type VaccinationData = rt.Static<typeof VacctinationRt>;
+
+export type Jadwal = rt.Static<typeof JadwalRt>;
+
+export type Waktu = rt.Static<typeof WaktuRt>;
+
+export type DetailLokasi = rt.Static<typeof DetailLokasiRt>;
+
+export type Kuota = rt.Static<typeof KuotaRt>;
 
 export interface Coordinate {
   lat: number;
