@@ -51,7 +51,7 @@ export const VacctinationRt = rt.Record({
   updated_at: rt.Union(rt.Null, rt.String),
   pcare: rt.Boolean,
   jadwal: rt.Array(JadwalRt),
-  detail_lokasi: rt.Array(DetailLokasiRt),
+  detail_lokasi: rt.Array(DetailLokasiRt).Or(rt.Null),
   last_updated_at: rt.String
 });
 

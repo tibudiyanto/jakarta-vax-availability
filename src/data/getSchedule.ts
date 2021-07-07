@@ -11,7 +11,7 @@ const getSchedule = async () => {
   // give warning to console if the validation is not success.
   // change it to more strict one if the API is already stable
   if (!validation.success) {
-    console.error(validation);
+    console.error('Contract Error: /n', validation);
   }
 
   return json;
