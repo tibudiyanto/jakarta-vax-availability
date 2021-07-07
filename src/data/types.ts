@@ -3,7 +3,8 @@ import * as rt from 'runtypes';
 export const KuotaRt = rt.Record({
   totalKuota: rt.Union(rt.Null, rt.Number),
   sisaKuota: rt.Union(rt.Null, rt.Number),
-  jakiKuota: rt.Union(rt.Null, rt.Number)
+  // the value is string and it's deprecated https://github.com/tibudiyanto/jakarta-vax-availability/issues/53#issuecomment-874673016
+  jakiKuota: rt.Union(rt.Null, rt.String)
 });
 
 export const WaktuRt = rt.Record({
