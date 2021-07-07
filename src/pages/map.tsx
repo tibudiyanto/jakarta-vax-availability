@@ -67,7 +67,7 @@ interface CoordinateData extends Partial<Coordinate> {
 const Mark = () => (
   <Box
     bg="red"
-    borderColor="darkred"
+    borderColor="red.200"
     borderRadius="50%"
     borderStyle="solid"
     borderWidth="4px"
