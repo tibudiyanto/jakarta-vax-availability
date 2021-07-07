@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Select,
   useColorMode,
   useColorModeValue
 } from '@chakra-ui/react';
