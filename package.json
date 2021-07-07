@@ -26,7 +26,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-mapbox-gl": "^5.1.1",
-    "rooks": "^5.0.2"
+    "rooks": "^5.0.2",
+    "runtypes": "^6.3.1"
   },
   "devDependencies": {
     "@chakra-ui/theme-tools": "^1.1.7",

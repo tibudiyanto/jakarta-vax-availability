@@ -107,8 +107,8 @@ export default function HomePage({ schedule }: Props) {
                       distance: getDistanceFromLatLonInKm(
                         userLocation.lat,
                         userLocation.lon,
-                        Number(loc?.lat),
-                        Number(loc?.lon)
+                        Number(loc.lat),
+                        Number(loc.lon)
                       )
                     }))
                     .sort((a, b) => (a.distance > b.distance ? 1 : -1))
