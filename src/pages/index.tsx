@@ -2,14 +2,12 @@ import * as React from 'react';
 
 import { getSchedule } from '~data/getSchedule';
 import type { VaccinationDataWithDistance } from '~modules/vax/types';
-import VaxLocation from '~modules/vax/VaxLocation';
-
-import Searchbox from '../components/Searchbox';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Box, Button, Container, Heading, HStack, SimpleGrid, Stack } from '@chakra-ui/react';
 import { VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
@@ -31,6 +29,9 @@ interface Props {
 const PAGE_SIZE = 20;
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
+const Searchbox = dynamic(() => import('../components/Searchbox'));
+const VaxLocation = dynamic(() => import('~modules/vax/VaxLocation'));
 
 export default function HomePage({ schedule }: Props) {
   // TODO sync from hash/query

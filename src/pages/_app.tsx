@@ -1,12 +1,14 @@
 import * as React from 'react';
 
-import Footer from '~components/Footer';
-import ToggleColorMode from '~components/ToggleColorMode';
 import theme from '~theme';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import type { AppProps } from 'next/app';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
+
+const Footer = dynamic(() => import('~components/Footer'));
+const ToggleColorMode = dynamic(() => import('~components/ToggleColorMode'));
 
 export default function MyApp({ Component, pageProps, router }: AppProps) {
   // Hide footer in map page
