@@ -177,7 +177,7 @@ export default function HomePage({ schedule }: Props) {
 
   const currentPageStartIndex = currentPage * PAGE_SIZE;
   const paginatedFilteredSchedule = filteredSchedule.slice(currentPageStartIndex, currentPageStartIndex + PAGE_SIZE);
-  const numberOfPage = Math.ceil(filteredSchedule.length / PAGE_SIZE);
+  const numberOfPage = Math.floor(filteredSchedule.length / PAGE_SIZE);
 
   return (
     <>
@@ -211,30 +211,36 @@ export default function HomePage({ schedule }: Props) {
           </Link>
         </Stack>
         <Container as="section" maxW="container.lg" px={0} w="full">
-          <SimpleGrid as="ul" columns={[1, null, null, 2]} listStyleType="none" spacing={4} w="full">
-            {paginatedFilteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
-              <Box key={i} as="li" w="full">
-                <VaxLocation
-                  isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
-                  loading={userLocation.loading}
-                  location={location}
-                />
-              </Box>
-            ))}
+          <Stack spacing={4}>
+            <SimpleGrid as="ul" columns={[1, null, null, 2]} listStyleType="none" spacing={4} w="full">
+              {paginatedFilteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
+                <Box key={i} as="li" w="full">
+                  <VaxLocation
+                    isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
+                    loading={userLocation.loading}
+                    location={location}
+                  />
+                </Box>
+              ))}
+            </SimpleGrid>
             <HStack justify="center" role="group" spacing={[0, 4]}>
               {Array(numberOfPage)
                 .fill(0)
                 .map((_, i) => (
                   <Button
                     key={i + 1}
-                    onClick={() => router.push(`#page=${i + 1}`)}
+                    onClick={() =>
+                      router.push(`/#page=${i + 1}`).then(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      })
+                    }
                     variant={currentPage === i + 1 ? 'solid' : 'ghost'}
                   >
                     {i + 1}
                   </Button>
                 ))}
             </HStack>
-          </SimpleGrid>
+          </Stack>
         </Container>
       </Stack>
     </>
