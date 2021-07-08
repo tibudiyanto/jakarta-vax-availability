@@ -62,7 +62,7 @@ export default function HomePage({ schedule }: Props) {
     return () => {
       router.events.off('hashChangeStart', handleHashChange);
     };
-  });
+  }, []);
 
   const getUserLocation = () => {
     setUserLocation(prev => ({ ...prev, loading: true }));
@@ -175,7 +175,7 @@ export default function HomePage({ schedule }: Props) {
     getUserLocation();
   };
 
-  const currentPageStartIndex = currentPage * PAGE_SIZE;
+  const currentPageStartIndex = (currentPage - 1) * PAGE_SIZE;
   const paginatedFilteredSchedule = filteredSchedule.slice(currentPageStartIndex, currentPageStartIndex + PAGE_SIZE);
   const numberOfPage = Math.floor(filteredSchedule.length / PAGE_SIZE);
 
