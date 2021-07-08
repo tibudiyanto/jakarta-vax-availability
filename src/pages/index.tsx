@@ -12,6 +12,7 @@ import { VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import Head from 'next/head';
 import Link from 'next/link';
+import Router from 'next/router';
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps() {
@@ -158,7 +159,7 @@ export default function HomePage({ schedule }: Props) {
         <Heading textAlign="center">😷 Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
         <Link href="/map" passHref prefetch={false}>
-          <Button as="a" leftIcon={<ExternalLinkIcon />} variant="solid">
+          <Button as="a" leftIcon={<ExternalLinkIcon />} onMouseOver={() => Router.prefetch('/map')} variant="solid">
             Peta
           </Button>
         </Link>
