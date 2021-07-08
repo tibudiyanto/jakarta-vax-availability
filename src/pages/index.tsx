@@ -7,11 +7,13 @@ import VaxLocation from '~modules/vax/VaxLocation';
 import Searchbox from '../components/Searchbox';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Box, Button, Container, Heading, SimpleGrid, Stack } from '@chakra-ui/react';
+import { Box, Button, Container, Heading, Stack } from '@chakra-ui/react';
 import { VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import Head from 'next/head';
 import Link from 'next/link';
+import Autosizer from 'react-virtualized-auto-sizer';
+import { VariableSizeGrid as Grid } from 'react-window';
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps() {
@@ -148,13 +150,19 @@ export default function HomePage({ schedule }: Props) {
     getUserLocation();
   };
 
+  function getRowHeight(row: number) {
+    const maxJadwal = Math.max(filteredSchedule[row * 2].jadwal.length, filteredSchedule[row * 2 + 1].jadwal.length);
+
+    return 260 + Math.ceil(maxJadwal / 4) * 40;
+  }
+
   return (
     <>
       <Head>
         <title>Lokasi dan Jadwal Vaksinasi DKI Jakarta</title>
       </Head>
 
-      <Stack align="center" p={[2, 4]} spacing={[2, 4]}>
+      <Stack align="center" height="100vh" p={[2, 4]} spacing={[2, 4]}>
         <Heading textAlign="center">😷 Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
         <Link href="/map" passHref>
@@ -174,18 +182,48 @@ export default function HomePage({ schedule }: Props) {
           </Button>
           <Searchbox keyword={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} />
         </Stack>
-        <Container as="section" maxW="container.lg" px={0} w="full">
-          <SimpleGrid as="ul" columns={[1, null, null, 2]} listStyleType="none" spacing={4} w="full">
-            {filteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
-              <Box key={i} as="li" w="full">
-                <VaxLocation
-                  isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
-                  loading={userLocation.loading}
-                  location={location}
-                />
-              </Box>
-            ))}
-          </SimpleGrid>
+        <Container as="section" flexGrow={1} flexShrink={1} maxW="container.lg" px={0} w="full">
+          <Autosizer>
+            {({ height, width }) => (
+              <Grid
+                key={filteredSchedule}
+                columnCount={2}
+                columnWidth={() => (width - 40) / 2}
+                height={height}
+                rowCount={Math.floor(filteredSchedule.length / 2)}
+                rowHeight={getRowHeight}
+                width={width}
+              >
+                {({
+                  columnIndex,
+                  rowIndex,
+                  style
+                }: {
+                  columnIndex: number;
+                  rowIndex: number;
+                  style: React.CSSProperties;
+                }) => {
+                  const location = filteredSchedule[rowIndex * 2 + columnIndex];
+                  return (
+                    <Box
+                      key={location.kode_lokasi_vaksinasi}
+                      as="li"
+                      listStyleType="none"
+                      marginLeft={columnIndex === 1 ? '20px' : 0}
+                      style={style}
+                      w="full"
+                    >
+                      <VaxLocation
+                        isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
+                        loading={userLocation.loading}
+                        location={location}
+                      />
+                    </Box>
+                  );
+                }}
+              </Grid>
+            )}
+          </Autosizer>
         </Container>
       </Stack>
     </>
