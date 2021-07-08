@@ -7,12 +7,12 @@ import VaxLocation from '~modules/vax/VaxLocation';
 import Searchbox from '../components/Searchbox';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Box, Button, Container, Heading, SimpleGrid, Stack } from '@chakra-ui/react';
+import { Box, Button, Container, Heading, HStack, SimpleGrid, Stack } from '@chakra-ui/react';
 import { VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import Head from 'next/head';
 import Link from 'next/link';
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { getDistanceFromLatLonInKm } from 'utils/location';
 
 export async function getStaticProps() {
@@ -28,7 +28,14 @@ interface Props {
   schedule: VaccinationData[];
 }
 
+const PAGE_SIZE = 20;
+
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
 export default function HomePage({ schedule }: Props) {
+  // TODO sync from hash/query
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [userLocation, setUserLocation] = React.useState({
     loading: false,
     lat: 0,
@@ -37,6 +44,25 @@ export default function HomePage({ schedule }: Props) {
   });
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const filtered = useFuzzySearch(schedule, searchKeyword);
+
+  useIsomorphicLayoutEffect(() => {
+    // sync current page from hash #page=1
+    function handleHashChange(url: string) {
+      const page = parseInt(url.split('#page=')[1], 10);
+      if (page) {
+        setCurrentPage(page);
+      }
+    }
+
+    if (window.location.hash.includes('page=')) {
+      handleHashChange(window.location.hash);
+    }
+
+    router.events.on('hashChangeStart', handleHashChange);
+    return () => {
+      router.events.off('hashChangeStart', handleHashChange);
+    };
+  });
 
   const getUserLocation = () => {
     setUserLocation(prev => ({ ...prev, loading: true }));
@@ -149,6 +175,10 @@ export default function HomePage({ schedule }: Props) {
     getUserLocation();
   };
 
+  const currentPageStartIndex = currentPage * PAGE_SIZE;
+  const paginatedFilteredSchedule = filteredSchedule.slice(currentPageStartIndex, currentPageStartIndex + PAGE_SIZE);
+  const numberOfPage = Math.ceil(filteredSchedule.length / PAGE_SIZE);
+
   return (
     <>
       <Head>
@@ -182,7 +212,7 @@ export default function HomePage({ schedule }: Props) {
         </Stack>
         <Container as="section" maxW="container.lg" px={0} w="full">
           <SimpleGrid as="ul" columns={[1, null, null, 2]} listStyleType="none" spacing={4} w="full">
-            {filteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
+            {paginatedFilteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
               <Box key={i} as="li" w="full">
                 <VaxLocation
                   isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
@@ -191,6 +221,19 @@ export default function HomePage({ schedule }: Props) {
                 />
               </Box>
             ))}
+            <HStack justify="center" role="group" spacing={[0, 4]}>
+              {Array(numberOfPage)
+                .fill(0)
+                .map((_, i) => (
+                  <Button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    variant={currentPage === i + 1 ? 'solid' : 'ghost'}
+                  >
+                    {i + 1}
+                  </Button>
+                ))}
+            </HStack>
           </SimpleGrid>
         </Container>
       </Stack>
