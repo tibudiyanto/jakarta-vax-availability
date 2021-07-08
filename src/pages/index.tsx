@@ -158,12 +158,6 @@ export default function HomePage({ schedule }: Props) {
       <Stack align="center" p={[2, 4]} spacing={[2, 4]}>
         <Heading textAlign="center">😷 Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
-        <Link href="/map" passHref prefetch={false}>
-          <Button as="a" leftIcon={<ExternalLinkIcon />} onMouseOver={() => Router.prefetch('/map')} variant="solid">
-            Peta
-          </Button>
-        </Link>
-
         <Stack direction={['column', 'row']} maxW="4xl" pb={4} w="full">
           <Button
             flexShrink={0}
@@ -174,6 +168,17 @@ export default function HomePage({ schedule }: Props) {
             {userLocation.lat && userLocation.lon ? 'Lokasi Ditemukan' : 'Dapatkan Lokasi Anda'}
           </Button>
           <Searchbox keyword={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} />
+          <Link href="/map" passHref prefetch={false}>
+            <Button
+              as="a"
+              flexShrink={0}
+              leftIcon={<ExternalLinkIcon />}
+              onMouseOver={() => Router.prefetch('/map')}
+              variant="solid"
+            >
+              Tampilan Peta
+            </Button>
+          </Link>
         </Stack>
         <Container as="section" maxW="container.lg" px={0} w="full">
           <SimpleGrid as="ul" columns={[1, null, null, 2]} listStyleType="none" spacing={4} w="full">

@@ -245,7 +245,7 @@ const MapPage = ({ schedule }: Props) => {
           )}
         </>
       </Map>
-      <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex="sticky">
+      <Box height="80px" left={0} maxWidth="620px" position="fixed" top={0} width="100%" zIndex="sticky">
         <Box
           backgroundColor={mapFlyoutBackgroundColor}
           borderRadius={10}
@@ -260,6 +260,8 @@ const MapPage = ({ schedule }: Props) => {
             <Button
               aria-label="Gunakan Lokasi Anda"
               borderRadius={4}
+              display={{ base: 'none', md: 'inline-flex', lg: 'inline-flex', xl: 'inline-flex' }}
+              flexShrink={0}
               label="Gunakan Lokasi Anda"
               onClick={() =>
                 isGetGeoPermission
@@ -273,7 +275,8 @@ const MapPage = ({ schedule }: Props) => {
                   : setGetGeoPermission(true)
               }
             >
-              📍
+              {' '}
+              📍 Lokasi Saya
             </Button>
             <Searchbox
               keyword={searchKeyword}
@@ -295,6 +298,27 @@ const MapPage = ({ schedule }: Props) => {
                 }, 100);
               }}
             />
+            <Button
+              aria-label="Gunakan Lokasi Anda"
+              borderRadius={4}
+              display={{ base: 'inline-flex', md: 'none', lg: 'none', xl: 'none' }}
+              flexShrink={0}
+              label="Gunakan Lokasi Anda"
+              onClick={() =>
+                isGetGeoPermission
+                  ? map?.easeTo({
+                      //@ts-expect-error latlng conflict
+                      center: {
+                        lat: geoObj?.lat,
+                        lng: geoObj?.lng
+                      }
+                    })
+                  : setGetGeoPermission(true)
+              }
+            >
+              {' '}
+              📍
+            </Button>
           </HStack>
         </Box>
       </Box>
