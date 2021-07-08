@@ -166,141 +166,138 @@ const MapPage = ({ schedule }: Props) => {
   const jakartaLatLng = { lat: -6.163088, lng: 106.836715 };
 
   return (
-    <>
+    <Container minHeight="100vh">
       <Head>
         <title>Lokasi dan Jadwal Vaksinasi DKI Jakarta</title>
       </Head>
-
-      <Container minHeight="100vh">
-        <Map
-          containerStyle={{
-            height: '100vh',
-            width: '100%'
-          }}
-          onDrag={() => setActiveLoc(undefined)}
-          onStyleLoad={loadedMap => {
-            setMap(loadedMap);
-            loadedMap.setCenter(jakartaLatLng);
-            setInitialMapBound();
-          }}
-          style="mapbox://styles/mapbox/streets-v8"
-        >
-          <>
-            {coordinates.map((coordinate, i) => {
-              return (
-                //@ts-expect-error - coordinate type conflict
-                <Marker key={i} coordinates={coordinate}>
-                  <Box
-                    onClick={() => {
-                      setActiveLoc(coordinate.lokasi);
-                      if (map != null) {
-                        map.easeTo({
-                          //@ts-expect-error latlng conflict
-                          center: {
-                            lat: coordinate.lokasi.lat,
-                            lng: coordinate.lokasi.lon
-                          }
-                        });
-                      }
-                    }}
-                  >
-                    <Mark key={i} />
-                  </Box>
-                </Marker>
-              );
-            })}
-            {geoObj?.lat && geoObj.lng && (
-              <Marker coordinates={[geoObj.lng, geoObj.lat]}>
-                <Popover>
-                  <PopoverTrigger>
-                    <Box
-                      bg="blue.300"
-                      borderColor="blue.400"
-                      borderRadius="50%"
-                      borderStyle="solid"
-                      borderWidth="4px"
-                      height="20px"
-                      width="20px"
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverHeader>{'Lokasi anda sekarang'}</PopoverHeader>
-                  </PopoverContent>
-                </Popover>
-              </Marker>
-            )}
-            {activeLoc != undefined && (
-              <Popup
-                key={activeLoc.osm_id}
-                anchor="bottom"
-                //@ts-expect-error latlng conflict
-                coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
-                style={{ marginTop: -20, padding: 0 }}
-              >
-                <Box backgroundColor={mapFlyoutBackgroundColor}>
-                  <VaxLocation isUserLocationExist={false} loading={false} location={activeLoc.parent} />
-                </Box>
-              </Popup>
-            )}
-          </>
-        </Map>
-        <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex="sticky">
-          <Box
-            backgroundColor={mapFlyoutBackgroundColor}
-            borderRadius={10}
-            boxShadow={mode === 'dark' ? 'dark-lg' : 'lg'}
-            margin={2}
-            padding={2}
-          >
-            <HStack spacing="8px">
-              <Link href="/" passHref>
-                <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
-              </Link>
-              <Button
-                aria-label="Gunakan Lokasi Anda"
-                borderRadius={4}
-                label="Gunakan Lokasi Anda"
-                onClick={() =>
-                  isGetGeoPermission
-                    ? map?.easeTo({
+      <Map
+        containerStyle={{
+          height: '100vh',
+          width: '100%'
+        }}
+        onDrag={() => setActiveLoc(undefined)}
+        onStyleLoad={loadedMap => {
+          setMap(loadedMap);
+          loadedMap.setCenter(jakartaLatLng);
+          setInitialMapBound();
+        }}
+        style="mapbox://styles/mapbox/streets-v8"
+      >
+        <>
+          {coordinates.map((coordinate, i) => {
+            return (
+              //@ts-expect-error - coordinate type conflict
+              <Marker key={i} coordinates={coordinate}>
+                <Box
+                  onClick={() => {
+                    setActiveLoc(coordinate.lokasi);
+                    if (map != null) {
+                      map.easeTo({
                         //@ts-expect-error latlng conflict
                         center: {
-                          lat: geoObj?.lat,
-                          lng: geoObj?.lng
-                        }
-                      })
-                    : setGetGeoPermission(true)
-                }
-              >
-                📍
-              </Button>
-              <Searchbox
-                keyword={searchKeyword}
-                onChange={e => {
-                  setSearchKeyword(e.target.value);
-
-                  setTimeout(() => {
-                    if (lokasiMap.length && lokasiMap[0] && map !== undefined) {
-                      map.easeTo({
-                        center: {
-                          lat: parseFloat(lokasiMap[0].lat ?? ''),
-                          lng: parseFloat(lokasiMap[0].lon ?? '')
+                          lat: coordinate.lokasi.lat,
+                          lng: coordinate.lokasi.lon
                         }
                       });
-                      setActiveLoc(lokasiMap[0]);
-                    } else {
-                      setActiveLoc(undefined);
                     }
-                  }, 100);
-                }}
-              />
-            </HStack>
-          </Box>
+                  }}
+                >
+                  <Mark key={i} />
+                </Box>
+              </Marker>
+            );
+          })}
+          {geoObj?.lat && geoObj.lng && (
+            <Marker coordinates={[geoObj.lng, geoObj.lat]}>
+              <Popover>
+                <PopoverTrigger>
+                  <Box
+                    bg="blue.300"
+                    borderColor="blue.400"
+                    borderRadius="50%"
+                    borderStyle="solid"
+                    borderWidth="4px"
+                    height="20px"
+                    width="20px"
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>{'Lokasi anda sekarang'}</PopoverHeader>
+                </PopoverContent>
+              </Popover>
+            </Marker>
+          )}
+          {activeLoc != undefined && (
+            <Popup
+              key={activeLoc.osm_id}
+              anchor="bottom"
+              //@ts-expect-error latlng conflict
+              coordinates={{ lat: activeLoc.lat, lng: activeLoc.lon }}
+              style={{ marginTop: -20, padding: 0 }}
+            >
+              <Box backgroundColor={mapFlyoutBackgroundColor}>
+                <VaxLocation isUserLocationExist={false} loading={false} location={activeLoc.parent} />
+              </Box>
+            </Popup>
+          )}
+        </>
+      </Map>
+      <Box height="80px" left={0} maxWidth="450px" position="fixed" top={0} width="100%" zIndex="sticky">
+        <Box
+          backgroundColor={mapFlyoutBackgroundColor}
+          borderRadius={10}
+          boxShadow={mode === 'dark' ? 'dark-lg' : 'lg'}
+          margin={2}
+          padding={2}
+        >
+          <HStack spacing="8px">
+            <Link href="/" passHref>
+              <IconButton aria-label="Back to Home" as="a" borderRadius={4} icon={<ArrowBackIcon />} />
+            </Link>
+            <Button
+              aria-label="Gunakan Lokasi Anda"
+              borderRadius={4}
+              label="Gunakan Lokasi Anda"
+              onClick={() =>
+                isGetGeoPermission
+                  ? map?.easeTo({
+                      //@ts-expect-error latlng conflict
+                      center: {
+                        lat: geoObj?.lat,
+                        lng: geoObj?.lng
+                      }
+                    })
+                  : setGetGeoPermission(true)
+              }
+            >
+              📍
+            </Button>
+            <Searchbox
+              keyword={searchKeyword}
+              onChange={e => {
+                setSearchKeyword(e.target.value);
+
+                setTimeout(() => {
+                  if (lokasiMap.length && lokasiMap[0] && map !== undefined) {
+                    map.easeTo({
+                      center: {
+                        lat: parseFloat(lokasiMap[0].lat ?? ''),
+                        lng: parseFloat(lokasiMap[0].lon ?? '')
+                      }
+                    });
+                    setActiveLoc(lokasiMap[0]);
+                  } else {
+                    setActiveLoc(undefined);
+                  }
+                }, 100);
+              }}
+            />
+          </HStack>
         </Box>
-      </Container>
-    </>
+      </Box>
+    </Container>
   );
 };
 
