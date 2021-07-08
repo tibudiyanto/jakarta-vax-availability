@@ -11,6 +11,7 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
   const { nama_lokasi_vaksinasi: namaLokasi, detail_lokasi } = location;
 
   const borderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
+  const floatingButtonFocusColor = useColorModeValue('blackAlpha.100', 'whiteAlpha.100');
 
   const mapsUrl = detail_lokasi?.[0]
     ? `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`
@@ -32,6 +33,10 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
       >
         <Flex flex="1 1 0%" w={0}>
           <Link
+            _focus={{
+              outline: 'none',
+              backgroundColor: floatingButtonFocusColor
+            }}
             _hover={{
               color: 'blue.500'
             }}
