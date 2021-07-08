@@ -12,6 +12,19 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
   // Hide footer in map page
   const isNotMapPage = React.useMemo(() => router.asPath !== '/map', [router.asPath]);
 
+  React.useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').then(
+        registration => {
+          console.log('SW regis succeeded:', registration);
+        },
+        error => {
+          console.log('SW regis failed:', error);
+        }
+      );
+    }
+  }, []);
+
   return (
     <>
       <Head>
