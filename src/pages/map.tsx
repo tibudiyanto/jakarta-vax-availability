@@ -4,6 +4,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React from 'react';
 
 import { getSchedule } from '~data/getSchedule';
+import type { VaccinationDataWithDistance } from '~modules/vax/types';
+import VaxLocationDetail from '~modules/vax/VaxLocationDetail';
 
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
@@ -22,7 +24,6 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import Searchbox from 'components/Searchbox';
-import VaxLocation, { VaccinationDataWithDistance } from 'components/VaxLocation';
 import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import MapboxGl from 'mapbox-gl';
@@ -66,7 +67,7 @@ interface CoordinateData extends Partial<Coordinate> {
 const Mark = () => (
   <Box
     bg="red"
-    borderColor="darkred"
+    borderColor="red.200"
     borderRadius="50%"
     borderStyle="solid"
     borderWidth="4px"
@@ -234,7 +235,7 @@ const MapPage = ({ schedule }: Props) => {
               style={{ marginTop: -20, padding: 0 }}
             >
               <Box backgroundColor={mapFlyoutBackgroundColor}>
-                <VaxLocation isUserLocationExist={false} loading={false} location={activeLoc.parent} />
+                <VaxLocationDetail isUserLocationExist={false} loading={false} location={activeLoc.parent} />
               </Box>
             </Popup>
           )}

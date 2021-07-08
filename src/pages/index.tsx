@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import type { VaccinationDataWithDistance } from '~components/VaxLocation';
-import VaxLocation from '~components/VaxLocation';
 import { getSchedule } from '~data/getSchedule';
+import type { VaccinationDataWithDistance } from '~modules/vax/types';
+import VaxLocation from '~modules/vax/VaxLocation';
 
 import Searchbox from '../components/Searchbox';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Button, Heading, Stack, Wrap, WrapItem } from '@chakra-ui/react';
+import { Box, Button, Container, Heading, SimpleGrid, Stack } from '@chakra-ui/react';
 import { VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import Head from 'next/head';
@@ -174,18 +174,19 @@ export default function HomePage({ schedule }: Props) {
           </Button>
           <Searchbox keyword={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} />
         </Stack>
-
-        <Wrap justify="center" spacing={4}>
-          {filteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
-            <WrapItem key={i} maxW={['full', 'md']} w="full">
-              <VaxLocation
-                isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
-                loading={userLocation.loading}
-                location={location}
-              />
-            </WrapItem>
-          ))}
-        </Wrap>
+        <Container as="section" maxW="container.lg" px={0} w="full">
+          <SimpleGrid as="ul" columns={[1, null, null, 2]} listStyleType="none" spacing={4} w="full">
+            {filteredSchedule.map((location: VaccinationDataWithDistance, i: number) => (
+              <Box key={i} as="li" w="full">
+                <VaxLocation
+                  isUserLocationExist={Boolean(userLocation.lat && userLocation.lon)}
+                  loading={userLocation.loading}
+                  location={location}
+                />
+              </Box>
+            ))}
+          </SimpleGrid>
+        </Container>
       </Stack>
     </>
   );
