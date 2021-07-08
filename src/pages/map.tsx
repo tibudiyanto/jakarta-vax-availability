@@ -28,6 +28,7 @@ import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import MapboxGl from 'mapbox-gl';
 import type { GetStaticPropsContext } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 import { useGeolocation } from 'rooks';
@@ -167,6 +168,9 @@ const MapPage = ({ schedule }: Props) => {
 
   return (
     <Container minHeight="100vh">
+      <Head>
+        <title>Lokasi dan Jadwal Vaksinasi DKI Jakarta</title>
+      </Head>
       <Map
         containerStyle={{
           height: '100vh',
