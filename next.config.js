@@ -1,4 +1,4 @@
-module.exports = {
+const nextConfig = {
   /**
    * Ignoring ESLint on build in favor of GitHub Workflows, read more on issue #28:
    * https://github.com/tibudiyanto/jakarta-vax-availability/issues/28#issuecomment-874470860
@@ -9,3 +9,9 @@ module.exports = {
     ignoreDuringBuilds: true
   }
 };
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true'
+});
+
+module.exports = withBundleAnalyzer(nextConfig);

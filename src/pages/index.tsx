@@ -157,7 +157,7 @@ export default function HomePage({ schedule }: Props) {
       <Stack align="center" p={[2, 4]} spacing={[2, 4]}>
         <Heading textAlign="center">😷 Lokasi dan Jadwal Vaksinasi DKI Jakarta</Heading>
 
-        <Link href="/map" passHref>
+        <Link href="/map" passHref prefetch={false}>
           <Button as="a" leftIcon={<ExternalLinkIcon />} variant="solid">
             Peta
           </Button>
