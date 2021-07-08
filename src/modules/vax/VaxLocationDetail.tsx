@@ -82,7 +82,7 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
     <>
       <Flex alignItems="center" flexDirection="row" justifyContent="space-between" p={4}>
         <Stack spacing={2}>
-          <Heading as="h2" isTruncated size="md" textTransform="capitalize">
+          <Heading as="h2" isTruncated size="md" textTransform="capitalize" whiteSpace="break-spaces">
             {namaLokasi}
           </Heading>
           <Tooltip hasArrow label={new Date(lastUpdated).toString()}>
