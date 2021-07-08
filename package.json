@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@chakra-ui/theme-tools": "^1.1.7",
+    "@next/bundle-analyzer": "^11.0.1",
     "@types/mapbox-gl": "^2.3.1",
     "@types/react": "^17.0.13",
     "@types/react-dom": "^17.0.8",
