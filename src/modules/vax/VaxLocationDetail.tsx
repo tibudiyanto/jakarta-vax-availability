@@ -133,12 +133,12 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {waktu.map(({ label, id, kuota }) => {
+                        {waktu.map(({ id, kuota }) => {
                           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                           const { sisaKuota = 0, totalKuota = 0 } = kuota as Kuota;
                           return (
                             <Tr key={id}>
-                              <Td>{label}</Td>
+                              <Td>{id}</Td>
                               <Td>{sisaKuota}</Td>
                               <Td>{totalKuota}</Td>
                             </Tr>
