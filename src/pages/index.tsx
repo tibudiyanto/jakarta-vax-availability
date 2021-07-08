@@ -227,7 +227,7 @@ export default function HomePage({ schedule }: Props) {
                 .map((_, i) => (
                   <Button
                     key={i + 1}
-                    onClick={() => setCurrentPage(i + 1)}
+                    onClick={() => router.push(`#page=${i + 1}`)}
                     variant={currentPage === i + 1 ? 'solid' : 'ghost'}
                   >
                     {i + 1}
