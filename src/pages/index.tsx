@@ -122,7 +122,7 @@ export default function HomePage({ schedule }: Props) {
             } else if (!b.detail_lokasi?.[0]) {
               return -1;
             } else if (a.detail_lokasi[0].distance && b.detail_lokasi[0].distance) {
-              return a.detail_lokasi[0].distance < b.detail_lokasi[0].distance ? -1 : 1;
+              return parseFloat(a.detail_lokasi[0].distance) < parseFloat(b.detail_lokasi[0].distance) ? -1 : 1;
             }
 
             return 0;
