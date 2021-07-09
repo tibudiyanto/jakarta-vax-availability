@@ -175,6 +175,15 @@ export default function HomePage({ schedule }: Props) {
     getUserLocation();
   };
 
+  const handleChangeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyword(e.target.value);
+
+    // reset page to 1
+    if (currentPage !== 1) {
+      router.push(`/`);
+    }
+  };
+
   const currentPageStartIndex = (currentPage - 1) * PAGE_SIZE;
   const paginatedFilteredSchedule = filteredSchedule.slice(currentPageStartIndex, currentPageStartIndex + PAGE_SIZE);
   const numberOfPage = Math.floor(filteredSchedule.length / PAGE_SIZE);
@@ -197,7 +206,7 @@ export default function HomePage({ schedule }: Props) {
           >
             {userLocation.lat && userLocation.lon ? 'Lokasi Ditemukan' : 'Dapatkan Lokasi Anda'}
           </Button>
-          <Searchbox keyword={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} />
+          <Searchbox keyword={searchKeyword} onChange={handleChangeKeyword} />
           <Link href="/map" passHref prefetch={false}>
             <Button
               as="a"
@@ -229,11 +238,12 @@ export default function HomePage({ schedule }: Props) {
                 .map((_, i) => (
                   <Button
                     key={i + 1}
-                    onClick={() =>
-                      router.push(`/#page=${i + 1}`).then(() => {
+                    onClick={() => {
+                      const nextPage = i === 0 ? `/` : `/#page=${i + 1}`;
+                      router.push(nextPage).then(() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                      })
-                    }
+                      });
+                    }}
                     variant={currentPage === i + 1 ? 'solid' : 'ghost'}
                   >
                     {i + 1}
