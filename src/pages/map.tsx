@@ -270,7 +270,8 @@ const MapPage = ({ schedule }: Props) => {
                       center: {
                         lat: geoObj?.lat,
                         lng: geoObj?.lng
-                      }
+                      },
+                      zoom: 13
                     })
                   : setGetGeoPermission(true)
               }
