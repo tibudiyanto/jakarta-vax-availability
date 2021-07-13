@@ -23,7 +23,8 @@ import {
   Th,
   Thead,
   Tr,
-  useColorMode
+  useColorMode,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { format, formatDistanceToNow, parse } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
@@ -36,6 +37,9 @@ export interface VaxLocationDetailDrawerProps {
 
 export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData }: VaxLocationDetailDrawerProps) {
   const { colorMode } = useColorMode();
+  const subtextColor = useColorModeValue('gray.600', 'gray.300');
+  const kuotaAvailableTextColor = useColorModeValue('green.600', 'green.400');
+  const kuotaEmptyTextColor = useColorModeValue('red.600', 'red.400');
 
   const {
     nama_lokasi_vaksinasi: namaLokasi,
@@ -69,34 +73,36 @@ export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData 
           Kembali
         </Badge>
         <DrawerHeader borderBottomWidth="1px">
-          <Text as="h1" fontSize="xl" fontWeight={700}>
-            {namaLokasi}
-          </Text>
-          <Text as="h3" color="gray.500" fontSize="xs" fontWeight={500} textTransform="capitalize">
-            {alamatLokasi
-              ? alamatLokasi.toLowerCase()
-              : `Kec. ${kecamatan.toLowerCase()}, Kel. ${kelurahan.toLowerCase()}`}
-          </Text>
-          <Text as="h3" fontSize="sm" fontWeight={600} textTransform="capitalize">
-            {wilayah.toLowerCase()}
-          </Text>
-          <Link
-            _focus={{
-              outline: 'none'
-            }}
-            _hover={{
-              color: 'blue.500'
-            }}
-            color="blue.300"
-            fontWeight="semibold"
-            href={mapsUrl}
-            isExternal
-          >
-            <Text fontSize="md">
-              📍 Cari Lokasi
-              <ExternalLinkIcon aria-hidden mx={2} />
+          <Stack direction="column" spacing={2}>
+            <Text as="h1" fontSize="xl" fontWeight={700}>
+              {namaLokasi}
             </Text>
-          </Link>
+            <Text as="h3" color={subtextColor} fontSize="xs" fontWeight={500} textTransform="capitalize">
+              {alamatLokasi
+                ? alamatLokasi.toLowerCase()
+                : `Kec. ${kecamatan.toLowerCase()}, Kel. ${kelurahan.toLowerCase()}`}
+            </Text>
+            <Text as="h3" fontSize="sm" fontWeight={600} textTransform="capitalize">
+              {wilayah.toLowerCase()}
+            </Text>
+            <Link
+              _focus={{
+                outline: 'none'
+              }}
+              _hover={{
+                color: 'blue.500'
+              }}
+              color="blue.300"
+              fontWeight="semibold"
+              href={mapsUrl}
+              isExternal
+            >
+              <Text fontSize="md">
+                📍 Cari Lokasi
+                <ExternalLinkIcon aria-hidden mx={2} />
+              </Text>
+            </Link>
+          </Stack>
         </DrawerHeader>
         <DrawerBody>
           <Box mb={2}>
@@ -125,7 +131,7 @@ export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData 
           <Stack direction="column" spacing={8}>
             {jadwal.map(({ id: jadwalId, waktu }) => (
               <Box key={jadwalId}>
-                <Text as="h3" color="gray.500" fontSize="sm" fontWeight={600} mb={2}>
+                <Text as="h3" color={subtextColor} fontSize="sm" fontWeight={600} mb={2}>
                   {format(parse(jadwalId, 'yyyy-MM-dd', new Date()), 'PPPP', { locale: idLocale })}
                 </Text>
                 <Table size="sm">
@@ -142,7 +148,10 @@ export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData 
                       return (
                         <Tr key={id}>
                           <Td>{format(parse(id, 'k:m:s', new Date()), 'p')}</Td>
-                          <Td color={sisaKuota != null && sisaKuota > 0 ? 'green' : 'red'} fontWeight={800}>
+                          <Td
+                            color={sisaKuota != null && sisaKuota > 0 ? kuotaAvailableTextColor : kuotaEmptyTextColor}
+                            fontWeight={800}
+                          >
                             {sisaKuota}
                           </Td>
                           <Td>{totalKuota}</Td>

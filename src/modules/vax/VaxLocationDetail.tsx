@@ -4,7 +4,6 @@ import { Kuota } from '~/data/types';
 import { hasQuota } from '~helpers/QuotaHelpers';
 
 import { VaccinationDataWithDistance } from './types';
-import VaxLocationDetailDrawer from './VaxLocationDetailDrawer';
 
 import {
   Badge,
@@ -27,7 +26,6 @@ import {
   Tooltip,
   Tr,
   useColorMode,
-  useDisclosure,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
@@ -46,7 +44,6 @@ export interface VaxLocationDetailProps {
  */
 export default function VaxLocationDetail({ loading, isUserLocationExist, location }: VaxLocationDetailProps) {
   const { colorMode } = useColorMode();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
     nama_lokasi_vaksinasi: namaLokasi,
@@ -82,14 +79,7 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
   };
   return (
     <>
-      <Flex
-        alignItems="center"
-        flexDirection="row"
-        justifyContent="space-between"
-        onClick={onOpen}
-        p={4}
-        style={{ cursor: 'pointer' }}
-      >
+      <Flex alignItems="center" flexDirection="row" justifyContent="space-between" p={4}>
         <Stack spacing={2}>
           <Heading as="h2" isTruncated size="md" textTransform="capitalize" whiteSpace="break-spaces">
             {namaLokasi}
@@ -162,8 +152,6 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
           ))}
         </Wrap>
       </Stack>
-
-      <VaxLocationDetailDrawer isOpen={isOpen} locationData={location} onClose={onClose} />
     </>
   );
 }
