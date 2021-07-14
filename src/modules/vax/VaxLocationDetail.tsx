@@ -77,7 +77,6 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
 
     return null;
   };
-
   return (
     <>
       <Flex alignItems="center" flexDirection="row" justifyContent="space-between" p={4}>
