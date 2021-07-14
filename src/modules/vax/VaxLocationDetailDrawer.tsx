@@ -14,6 +14,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
+  IconButton,
   Link,
   Stack,
   Table,
@@ -59,21 +60,18 @@ export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData 
     <Drawer isOpen={isOpen} onClose={onClose} placement="left" size="md">
       <DrawerOverlay />
       <DrawerContent>
-        <Badge
-          fontSize="0.8em"
-          onClick={() => {
-            onClose();
-          }}
-          p={4}
-          style={{
-            cursor: 'pointer'
-          }}
-        >
-          <ArrowBackIcon h={4} w={4} />
-          Kembali
-        </Badge>
         <DrawerHeader borderBottomWidth="1px">
           <Stack direction="column" spacing={2}>
+            <Box>
+              <IconButton
+                aria-label="kembali"
+                borderRadius={10}
+                color="blue.300"
+                fontWeight="bold"
+                icon={<ArrowBackIcon />}
+                onClick={onClose}
+              />
+            </Box>
             <Text as="h1" fontSize="xl" fontWeight={700}>
               {namaLokasi}
             </Text>
