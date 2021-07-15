@@ -79,7 +79,7 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
   };
   return (
     <>
-      <Flex alignItems="center" flexDirection="row" justifyContent="space-between" p={4}>
+      <Flex alignItems="flex-start" flexDirection="row" justifyContent="space-between" p={4}>
         <Stack spacing={2}>
           <Heading as="h2" isTruncated size="md" textTransform="capitalize" whiteSpace="break-spaces">
             {namaLokasi}
@@ -93,10 +93,10 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
             </Text>
           </Tooltip>
         </Stack>
-        <Stack flex="0 0 auto" ml={4} spacing={2}>
+        <Stack flex="0 0 auto" ml={4} spacing={1}>
           {!isCurrentLocationHasQuota && (
             <Box>
-              <Badge align="right" colorScheme="red">
+              <Badge align="right" colorScheme="red" fontSize="0.8em">
                 Kuota Habis
               </Badge>
             </Box>

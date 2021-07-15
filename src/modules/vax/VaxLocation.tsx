@@ -15,6 +15,9 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
   const borderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200');
   const floatingButtonFocusColor = useColorModeValue('blackAlpha.100', 'whiteAlpha.100');
 
+  const linkColor = useColorModeValue('blue.500', 'blue.300');
+  const linkHoverColor = useColorModeValue('blue.700', 'blue.500');
+
   const mapsUrl = detail_lokasi?.[0]
     ? `https://www.google.com/maps/search/${encodeURIComponent(`${detail_lokasi[0].lat}, ${detail_lokasi[0].lon}`)}`
     : `https://www.google.com/maps/search/${encodeURIComponent(namaLokasi)}`;
@@ -41,11 +44,11 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                 backgroundColor: floatingButtonFocusColor
               }}
               _hover={{
-                color: 'blue.500'
+                color: linkHoverColor
               }}
               alignItems="center"
               as="button"
-              color="blue.300"
+              color={linkColor}
               display="inline-flex"
               flex="1 1 0%"
               fontWeight="semibold"
@@ -64,10 +67,10 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
                 backgroundColor: floatingButtonFocusColor
               }}
               _hover={{
-                color: 'blue.500'
+                color: linkHoverColor
               }}
               alignItems="center"
-              color="blue.300"
+              color={linkColor}
               display="inline-flex"
               flex="1 1 0%"
               fontWeight="semibold"

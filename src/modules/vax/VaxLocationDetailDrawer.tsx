@@ -66,7 +66,6 @@ export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData 
               <IconButton
                 aria-label="kembali"
                 borderRadius={10}
-                color="blue.300"
                 fontWeight="bold"
                 icon={<ArrowBackIcon />}
                 onClick={onClose}
@@ -87,10 +86,6 @@ export default function VaxLocationDetailDrawer({ isOpen, onClose, locationData 
               _focus={{
                 outline: 'none'
               }}
-              _hover={{
-                color: 'blue.500'
-              }}
-              color="blue.300"
               fontWeight="semibold"
               href={mapsUrl}
               isExternal
