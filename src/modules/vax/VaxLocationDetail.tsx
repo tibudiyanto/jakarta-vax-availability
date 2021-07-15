@@ -93,7 +93,7 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
             </Text>
           </Tooltip>
         </Stack>
-        <Stack ml={4} spacing={2}>
+        <Stack flex="0 0 auto" ml={4} spacing={2}>
           {!isCurrentLocationHasQuota && (
             <Box>
               <Badge align="right" colorScheme="red">
