@@ -10,6 +10,17 @@ export default extendTheme(<ThemeOverride>{
     black: '#16161d'
   },
 
+  components: {
+    Link: {
+      baseStyle: ({ colorMode }) => ({
+        color: colorMode === 'dark' ? 'blue.300' : 'blue.500',
+        _hover: {
+          color: colorMode === 'dark' ? 'blue.500' : 'blue.700'
+        }
+      })
+    }
+  },
+
   fonts: {
     //
   },
@@ -17,7 +28,7 @@ export default extendTheme(<ThemeOverride>{
   icons,
 
   styles: {
-    global: {
+    global: () => ({
       html: {
         scrollBehavior: 'smooth'
       },
@@ -28,7 +39,6 @@ export default extendTheme(<ThemeOverride>{
         WebkitFontSmoothing: 'antialiased',
         textRendering: 'optimizeLegibility'
       },
-
       '.mapboxgl-popup-content': {
         bg: 'transparent',
         borderRadius: '6px',
@@ -37,6 +47,6 @@ export default extendTheme(<ThemeOverride>{
       '.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip': {
         borderTopColor: 'black'
       }
-    }
+    })
   }
 });

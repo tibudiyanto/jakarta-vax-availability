@@ -10,11 +10,11 @@ export default function Footer() {
     <Stack align="center" fontSize="sm" justify="center" px={2} py={[8, 16]} spacing={4} textAlign="center">
       <Text>
         Made using Next.js and Chakra UI.{' '}
-        <Link color="blue.300" href={config.repoUrl} isExternal>
+        <Link href={config.repoUrl} isExternal>
           View repository
         </Link>
       </Text>
-      <Link color="blue.300" href={config.vercelBannerUrl} isExternal>
+      <Link href={config.vercelBannerUrl} isExternal>
         <Img alt="Powered by Vercel" height={8} src={(vercelBanner as StaticImageData).src} />
       </Link>
     </Stack>
