@@ -31,7 +31,6 @@ export default function VaxLocation({ loading, location, isUserLocationExist }: 
           borderTopColor={borderColor}
           sx={{
             '> :not([hidden]) ~ :not([hidden])': {
-              borderRightWidth: '1px',
               borderLeftWidth: '1px',
               borderColor
             }
