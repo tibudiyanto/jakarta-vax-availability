@@ -1,5 +1,4 @@
 import * as rt from 'runtypes';
-import { Optional } from 'runtypes';
 
 export const KuotaRt = rt.Record({
   totalKuota: rt.Union(rt.Null, rt.Number),
@@ -10,7 +9,7 @@ export const KuotaRt = rt.Record({
 
 export const WaktuRt = rt.Record({
   id: rt.String,
-  label: Optional(rt.String),
+  label: rt.Optional(rt.String),
   kuota: KuotaRt.Or(rt.Record({}))
 });
 
