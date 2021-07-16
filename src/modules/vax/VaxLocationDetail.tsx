@@ -26,6 +26,7 @@ import {
   Tooltip,
   Tr,
   useColorMode,
+  useColorModeValue,
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
@@ -44,6 +45,7 @@ export interface VaxLocationDetailProps {
  */
 export default function VaxLocationDetail({ loading, isUserLocationExist, location }: VaxLocationDetailProps) {
   const { colorMode } = useColorMode();
+  const distanceBackgroundColor = useColorModeValue('gray.200', 'gray.700');
 
   const {
     nama_lokasi_vaksinasi: namaLokasi,
@@ -68,9 +70,11 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
     if (isUserLocationExist && typeof detail_lokasi !== 'undefined' && detail_lokasi.length > 0) {
       return (
         <Tooltip hasArrow label={<Text>Jarak dari lokasi Anda: {detail_lokasi[0].distance} km</Text>}>
-          <Text align="right" fontSize="2xl" fontWeight="semibold">
-            {detail_lokasi[0].distance} km
-          </Text>
+          <Box backgroundColor={distanceBackgroundColor} borderRadius="sm" display="inline-block" px="4" py="2">
+            <Text fontSize="md" fontWeight="semibold">
+              {detail_lokasi[0].distance} km
+            </Text>
+          </Box>
         </Tooltip>
       );
     }
@@ -94,14 +98,14 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
           </Tooltip>
         </Stack>
         <Stack flex="0 0 auto" ml={4} spacing={1}>
+          <Box textAlign="right">{renderLocationDistance()}</Box>
           {!isCurrentLocationHasQuota && (
-            <Box>
-              <Badge align="right" colorScheme="red" fontSize="0.8em">
+            <Box textAlign="right">
+              <Badge colorScheme="red" fontSize="0.8em">
                 Kuota Habis
               </Badge>
             </Box>
           )}
-          {renderLocationDistance()}
         </Stack>
       </Flex>
       <Stack pb={6} px={4} spacing={4}>
