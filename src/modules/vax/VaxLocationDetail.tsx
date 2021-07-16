@@ -1,30 +1,18 @@
 import * as React from 'react';
 
-import { Kuota } from '~/data/types';
 import { hasQuota } from '~helpers/QuotaHelpers';
+import { VaxLocationSchedulePopover } from '~modules/vax-schedule';
 
 import { VaccinationDataWithDistance } from './types';
 
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Heading,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Stack,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   useColorMode,
   useColorModeValue,
   Wrap,
@@ -116,42 +104,9 @@ export default function VaxLocationDetail({ loading, isUserLocationExist, locati
           <Text textTransform="capitalize">{wilayah.toLowerCase()}</Text>
         </Stack>
         <Wrap>
-          {jadwal.map(({ id: jadwalId, waktu }) => (
+          {jadwal.map(({ id: jadwalId, label: jadwalLabel, waktu }) => (
             <WrapItem key={jadwalId}>
-              <Popover isLazy>
-                <PopoverTrigger>
-                  <Button size="sm" variant="outline">
-                    {jadwalId}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent w={['95vw', '30vw']}>
-                  <PopoverArrow />
-                  <PopoverBody>
-                    <Table>
-                      <Thead>
-                        <Tr>
-                          <Th>Waktu</Th>
-                          <Th>Sisa Kuota</Th>
-                          <Th>Total Kuota</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {waktu.map(({ id, kuota }) => {
-                          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                          const { sisaKuota = 0, totalKuota = 0 } = kuota as Kuota;
-                          return (
-                            <Tr key={id}>
-                              <Td>{id}</Td>
-                              <Td>{sisaKuota}</Td>
-                              <Td>{totalKuota}</Td>
-                            </Tr>
-                          );
-                        })}
-                      </Tbody>
-                    </Table>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
+              <VaxLocationSchedulePopover id={jadwalId} label={jadwalLabel} waktu={waktu} />
             </WrapItem>
           ))}
         </Wrap>

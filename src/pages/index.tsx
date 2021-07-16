@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import { getSchedule } from '~data/getSchedule';
-import type { VaccinationDataWithDistance } from '~modules/vax/types';
-import VaxLocation from '~modules/vax/VaxLocation';
+import { VaccinationDataWithDistance, VaxLocation } from '~modules/vax';
 
 import Searchbox from '../components/Searchbox';
 
@@ -180,7 +179,7 @@ export default function HomePage({ schedule }: Props) {
 
     // reset page to 1
     if (currentPage !== 1) {
-      router.push(`/`);
+      void router.push(`/`);
     }
   };
 
@@ -240,7 +239,7 @@ export default function HomePage({ schedule }: Props) {
                     key={i + 1}
                     onClick={() => {
                       const nextPage = i === 0 ? `/` : `/#page=${i + 1}`;
-                      router.push(nextPage).then(() => {
+                      void router.push(nextPage).then(() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       });
                     }}

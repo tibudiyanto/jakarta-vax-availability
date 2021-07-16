@@ -1,4 +1,4 @@
-import { DetailLokasi, VaccinationData } from '~data/types';
+import type { DetailLokasi, VaccinationData } from '~data/types';
 
 export interface DetailLokasiWithDistance extends DetailLokasi {
   distance?: string | null;
