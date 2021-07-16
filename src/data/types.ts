@@ -10,7 +10,7 @@ export const KuotaRt = rt.Record({
 export const WaktuRt = rt.Record({
   id: rt.String,
   label: rt.Optional(rt.String),
-  kuota: KuotaRt.Or(rt.Record({}))
+  kuota: rt.Optional(KuotaRt)
 });
 
 export const JadwalRt = rt.Record({

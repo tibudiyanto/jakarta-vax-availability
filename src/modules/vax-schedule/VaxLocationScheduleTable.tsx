@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Kuota, Waktu } from '~data/types';
+import { Waktu } from '~data/types';
 
 import { Table, Tbody, Td, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
 
@@ -23,19 +23,23 @@ export default function VaxLocationScheduleTable({ waktu }: VaxLocationScheduleT
       </Thead>
       <Tbody>
         {waktu.map(({ id, kuota }) => {
-          const { sisaKuota = 0, totalKuota = 0 } = kuota as Kuota;
+          if (kuota) {
+            const { sisaKuota = 0, totalKuota = 0 } = kuota;
 
-          const kuotaColor = sisaKuota && sisaKuota > 0 ? kuotaAvailableTextColor : kuotaEmptyTextColor;
+            const kuotaColor = sisaKuota && sisaKuota > 0 ? kuotaAvailableTextColor : kuotaEmptyTextColor;
 
-          return (
-            <Tr key={id}>
-              <Td>{id}</Td>
-              <Td color={kuotaColor} fontWeight={700}>
-                {sisaKuota}
-              </Td>
-              <Td>{totalKuota}</Td>
-            </Tr>
-          );
+            return (
+              <Tr key={id}>
+                <Td>{id}</Td>
+                <Td color={kuotaColor} fontWeight={700}>
+                  {sisaKuota}
+                </Td>
+                <Td>{totalKuota}</Td>
+              </Tr>
+            );
+          }
+
+          return null;
         })}
       </Tbody>
     </Table>
