@@ -270,7 +270,8 @@ const MapPage = ({ schedule }: Props) => {
                       center: {
                         lat: geoObj?.lat,
                         lng: geoObj?.lng
-                      }
+                      },
+                      zoom: 13
                     })
                   : setGetGeoPermission(true)
               }
@@ -289,7 +290,8 @@ const MapPage = ({ schedule }: Props) => {
                       center: {
                         lat: parseFloat(lokasiMap[0].lat ?? ''),
                         lng: parseFloat(lokasiMap[0].lon ?? '')
-                      }
+                      },
+                      zoom: 13
                     });
                     setActiveLoc(lokasiMap[0]);
                   } else {
@@ -311,7 +313,8 @@ const MapPage = ({ schedule }: Props) => {
                       center: {
                         lat: geoObj?.lat,
                         lng: geoObj?.lng
-                      }
+                      },
+                      zoom: 13
                     })
                   : setGetGeoPermission(true)
               }
