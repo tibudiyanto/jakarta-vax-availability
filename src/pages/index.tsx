@@ -192,6 +192,12 @@ export default function HomePage({ schedule }: Props) {
     <>
       <Head>
         <title>Lokasi dan Jadwal Vaksinasi DKI Jakarta</title>
+        <script
+          async
+          data-website-id="3d98edc2-8e12-4a38-96c1-400800734161"
+          defer
+          src="https://analytic-jakarta-vax-availability.vercel.app/umami.js"
+        />
       </Head>
 
       <Stack align="center" p={[2, 4]} spacing={[2, 4]}>
