@@ -21,7 +21,8 @@ import {
   PopoverHeader,
   PopoverTrigger,
   useColorMode,
-  useColorModeValue
+  useColorModeValue,
+  useToast
 } from '@chakra-ui/react';
 import Searchbox from 'components/Searchbox';
 import { Coordinate, DetailLokasi, Jadwal, VaccinationData } from 'data/types';
@@ -103,6 +104,12 @@ const MapPage = ({ schedule }: Props) => {
   const mapFlyoutBackgroundColor = useColorModeValue('white', 'gray.900');
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const filtered = useFuzzySearch(schedule, searchKeyword);
+  const toast = useToast({
+    status: 'error',
+    title: 'Galat',
+    position: 'top-right',
+    variant: 'solid'
+  });
 
   const scheduleToRender = () => {
     if (!searchKeyword.length) {
@@ -163,6 +170,13 @@ const MapPage = ({ schedule }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geoObj?.lat, geoObj?.lng]);
+
+  React.useEffect(() => {
+    if (geoObj?.message) {
+      console.error(`Get geolocation error: ${geoObj.message}`);
+      toast({ description: 'Pastikan Anda mengizinkan geolokasi' });
+    }
+  }, [geoObj?.message]);
 
   const jakartaLatLng = { lat: -6.163088, lng: 106.836715 };
 

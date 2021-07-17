@@ -7,7 +7,7 @@ import VaxLocation from '~modules/vax/VaxLocation';
 import Searchbox from '../components/Searchbox';
 
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Box, Button, Container, Heading, HStack, SimpleGrid, Stack } from '@chakra-ui/react';
+import { Box, Button, Container, Heading, HStack, SimpleGrid, Stack, useToast } from '@chakra-ui/react';
 import { VaccinationData } from 'data/types';
 import useFuzzySearch from 'hooks/useFuzzySearch';
 import Head from 'next/head';
@@ -30,20 +30,27 @@ interface Props {
 
 const PAGE_SIZE = 20;
 
+const defaultUserLocation = {
+  loading: false,
+  lat: 0,
+  lon: 0
+};
+
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
 
 export default function HomePage({ schedule }: Props) {
   // TODO sync from hash/query
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [userLocation, setUserLocation] = React.useState({
-    loading: false,
-    lat: 0,
-    lon: 0,
-    error: ''
-  });
+  const [userLocation, setUserLocation] = React.useState(() => defaultUserLocation);
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const filtered = useFuzzySearch(schedule, searchKeyword);
+  const toast = useToast({
+    status: 'error',
+    title: 'Galat',
+    position: 'top-right',
+    variant: 'solid'
+  });
 
   useIsomorphicLayoutEffect(() => {
     // sync current page from hash #page=1
@@ -72,18 +79,13 @@ export default function HomePage({ schedule }: Props) {
         setUserLocation({
           loading: false,
           lat: coords.latitude,
-          lon: coords.longitude,
-          error: ''
+          lon: coords.longitude
         });
       },
       error => {
         console.error(`Get geolocation error: ${error.message}`);
-        setUserLocation({
-          loading: false,
-          lat: 0,
-          lon: 0,
-          error: 'Get geolocation error'
-        });
+        toast({ description: 'Pastikan Anda mengizinkan geolokasi' });
+        setUserLocation(defaultUserLocation);
       },
       {
         enableHighAccuracy: false,
@@ -164,11 +166,7 @@ export default function HomePage({ schedule }: Props) {
   const handleButtonClickUserLocation = () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!navigator.geolocation) {
-      console.error('Geolocation is not supported');
-      setUserLocation(prev => ({
-        ...prev,
-        error: 'Geolocation is not supported'
-      }));
+      toast({ description: 'Peramban tidak mendukung geolokasi' });
       return;
     }
 
